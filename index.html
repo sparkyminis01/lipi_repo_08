@@ -1617,7 +1617,8 @@
         const top = (window.screen.height / 2) - (height / 2);
 
         presentationWindow = window.open(
-            window.location.href, 
+            // window.location.href, 
+            window.location.pathname + '?mode=presenter',
             APP_ID + '-presentation', 
             `width=${width},height=${height},left=${left},top=${top}`
         );
