@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkyMinis | LipiKit Trainer</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Main Trainer View */
+        .trainer-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+            min-height: 100vh;
+        }
+
+        .trainer-sidebar {
+            background: linear-gradient(180deg, #f8f9fa 0%, #f3f4f6 100%);
+            padding: 1.25rem;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.08);
+            overflow-y: auto;
+            max-height: 100vh;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .trainer-main {
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+            letter-spacing: 0.3px;
+        }
+
+        .timer-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .timer-warning {
+            animation: flash-red 1s infinite;
+        }
+
+        @keyframes flash-red {
+            0%, 100% { color: #ef4444; }
+            50% { color: #333; }
+        }
+
+        /* Collapsible Sections */
+        .collapsible-section {
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+        }
+
+        .collapsible-section.collapsed {
+            max-height: 2.5rem; /* Title only */
+        }
+
+        .section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '▼';
+            float: right;
+            transition: transform 0.3s;
+        }
+
+        .collapsible-section.collapsed .section-title::after {
+            transform: rotate(180deg);
+        }
+
+        .section {
+            margin-bottom: 1.25rem;
+        }
+        
+        .collapsible-section {
+            margin-bottom: 0.75rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 0.75rem;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .file-input-label:hover {
+            background: #e5e7eb;
+            border-color: #667eea;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn:focus {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+            outline: none;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e5e7eb;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #d97706;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .step-counter {
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .meta-box {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .meta-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-item {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-label {
+            font-weight: 600;
+        }
+
+        .summary-box {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 1.5rem;
+        }
+
+        .summary-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .summary-text {
+            color: #666;
+        }
+
+        /* Main Content Area */
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.4s ease-out;
+            border: 1px solid #e5e7eb;
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .block-type-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .badge-slide {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-script {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-activity {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+        .block-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-top: 0.5rem;
+        }
+
+        .block-duration {
+            text-align: right;
+        }
+
+        .duration-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .duration-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .teleprompter-area {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            min-height: 65vh;
+            max-height: 75vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            line-height: 1.8;
+            font-size: 18px;
+            color: #1f2937;
+            transition: background 0.3s, color 0.3s;
+            border: 1px solid #e5e7eb;
+        }
+
+        /* NEW: Dark Mode for Teleprompter */
+        .teleprompter-area.dark-mode {
+            background: #1e2a44;
+            color: #e5e7eb;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .teleprompter-area.dark-mode p,
+        .teleprompter-area.dark-mode strong,
+        .teleprompter-area.dark-mode h4 {
+            color: #e5e7eb;
+        }
+
+        .teleprompter-area.dark-mode ul li::marker {
+            color: #e5e7eb;
+        }
+
+        .teleprompter-area.dark-mode div[style*="border-top"] {
+            border-top-color: #4b5563 !important;
+        }
+
+        .teleprompter-area p {
+            margin-bottom: 1rem;
+        }
+
+        .teleprompter-area strong {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .teleprompter-area ul {
+            list-style-type: disc;
+            padding-left: 2rem;
+            margin: 1rem 0;
+        }
+
+        .teleprompter-area li {
+            margin-bottom: 0.5rem;
+        }
+
+        #teleprompter-content {
+            animation: fadeGrow 0.6s ease-in;
+        }
+
+        /* Progressive Focus Animations (PFA) Keyframes */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeGrow {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Font size adjuster slider */
+        .font-size-slider {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            outline: none;
+            margin: 0.75rem 0 0.5rem 0;
+        }
+
+        .font-size-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        .font-size-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        .font-size-value {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* NEW: Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .theme-toggle input {
+            appearance: none;
+            width: 40px;
+            height: 20px;
+            background: #d1d5db;
+            border-radius: 20px;
+            position: relative;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .theme-toggle input::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+
+        .theme-toggle input:checked {
+            background: #667eea;
+        }
+
+        .theme-toggle input:checked::before {
+            transform: translateX(20px);
+        }
+
+        /* Presentation View */
+        .presentation-view {
+            background: linear-gradient(135deg, #0d1222 0%, #1e2a44 100%);
+            color: #ffffff;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            text-align: center;
+            position: relative;
+        }
+
+        .presentation-branding {
+            position: absolute;
+            top: 1rem;
+            left: 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .presentation-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            line-height: 1.1;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            margin-top: 1rem;
+            width: min(95%, 1200px);
+            animation: fadeIn 0.5s ease forwards;
+            word-wrap: break-word;
+        }
+
+        .presentation-content {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            line-height: 1.7;
+            color: #e5e7eb;
+            text-align: left;
+            width: min(95%, 1200px);
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease 0.2s forwards;
+            padding: 0 1rem;
+        }
+
+        .presentation-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: min(95%, 1200px);
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            margin-top: auto;
+            margin-bottom: 1rem;
+        }
+
+        .presentation-nav button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .presentation-nav button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .presentation-nav button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .presentation-nav span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+        }
+
+        .progress-container {
+            width: min(95%, 1200px);
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Shortcuts Overlay */
+        .shortcuts-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shortcuts-overlay.show {
+            display: flex;
+        }
+
+        .shortcuts-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .shortcuts-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .shortcut-key {
+            background: #f3f4f6;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .shortcut-desc {
+            color: #666;
+        }
+
+        /* Timer Popup Overlay */
+        .timer-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: none;
+        }
+
+        .timer-overlay.show {
+            display: flex;
+        }
+
+        .timer-popup {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            min-width: 300px;
+            animation: timerPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes timerPopIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .timer-label {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timer-display-large {
+            font-size: 5rem;
+            font-weight: 800;
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 2rem;
+            line-height: 1;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-display-large.warning {
+            animation: pulse-warning 0.6s ease-in-out infinite;
+            color: #fbbf24;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .timer-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .timer-btn-play {
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid white;
+        }
+
+        .timer-btn-play:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .timer-btn-close {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .timer-btn-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .timer-input-group {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .timer-input {
+            width: 70px;
+            padding: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .timer-input:focus {
+            outline: none;
+            border-color: white;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .timer-input-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+
+        /* Timer Button Styling */
+        #presentation-timer-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1999;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        #presentation-timer-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.6);
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        #presentation-timer-btn:active {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container"></div>
+
+<script>
+    let state = {
+        meta: { segmentTitle: "No Content Loaded", durationMinutes: 0, toolsUsed: "" },
+        summary: { goal: "Load content to see summary.", keyOutcome: "", assessment: "" },
+        blocks: [],
+        currentStepIndex: 0,
+        lastAudienceBlock: null,
+    };
+    let presentationWindow = null;
+    let timerInterval = null;
+    let totalSecondsElapsed = 0;
+    let totalSessionSeconds = 0;
+    let autoScrollInterval = null;
+    let isAutoScrolling = false;
+    const SCROLL_SPEED = 1;
+    const APP_ID = 'trainer-assistant-v1';
+    const root = document.getElementById('app-container');
+
+    function normalizeBullets(content) {
+        return content.replace(/^[\s•\-\>]\s+/gm, '- ');
+    }
+
+    function renderMarkdownInline(content) {
+        if (!content) return '';
+        return content.split('\n').map(line => marked.parseInline(line) || line).join('<br>');
+    }
+
+    function getBlockPreview(block) {
+        if (block.type === 'SLIDE') {
+            return block.content.title || 'Slide';
+        } else if (block.type === 'SCRIPT') {
+            return 'Trainer Narration';
+        } else if (block.type === 'ACTIVITY') {
+            return `Activity: ${block.content.activityType || 'Unnamed'}`;
+        }
+        return block.type;
+    }
+
+    function parseCourseContent(content) {
+        const lines = content.trim().split('\n');
+        let blocks = [];
+        let meta = { segmentTitle: "Untitled Segment", durationMinutes: 0, toolsUsed: "" };
+        let summary = { goal: "", keyOutcome: "", assessment: "" };
+
+        const titleLine = lines.find(line => line.trim().startsWith('# '));
+        if (titleLine) {
+            meta.segmentTitle = titleLine.substring(2).trim();
+        }
+
+        const metaStartIdx = lines.findIndex(line => line.trim() === '[META]');
+        if (metaStartIdx !== -1) {
+            let i = metaStartIdx + 1;
+            while (i < lines.length && !lines[i].trim().startsWith('[')) {
+                const line = lines[i].trim();
+                if (line.startsWith('Duration:')) {
+                    const durationMatch = line.match(/Duration:\s*(\d+)/);
+                    if (durationMatch) meta.durationMinutes = parseInt(durationMatch[1]);
+                } else if (line.startsWith('Tools Used:')) {
+                    meta.toolsUsed = line.substring('Tools Used:'.length).trim();
+                }
+                i++;
+            }
+        }
+
+        const summaryStartIdx = lines.findIndex(line => line.trim() === '[SESSION SUMMARY]');
+        if (summaryStartIdx !== -1) {
+            let i = summaryStartIdx + 1;
+            while (i < lines.length && !lines[i].trim().startsWith('[')) {
+                const line = lines[i].trim();
+                if (line.startsWith('Goal:')) {
+                    summary.goal = line.substring('Goal:'.length).trim();
+                } else if (line.startsWith('Key Outcome:')) {
+                    summary.keyOutcome = line.substring('Key Outcome:'.length).trim();
+                } else if (line.startsWith('Assessment:')) {
+                    summary.assessment = line.substring('Assessment:'.length).trim();
+                }
+                i++;
+            }
+        }
+
+        let currentBlock = null;
+        let currentBlockLines = [];
+        
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            
+            if (line === '[SLIDE]' || line === '[SCRIPT]' || line === '[ACTIVITY]') {
+                if (currentBlock) {
+                    blocks.push(parseBlock(currentBlock, currentBlockLines));
+                }
+                currentBlock = line.substring(1, line.length - 1);
+                currentBlockLines = [];
+            } else if (currentBlock) {
+                currentBlockLines.push(lines[i]);
+            }
+        }
+        
+        if (currentBlock) {
+            blocks.push(parseBlock(currentBlock, currentBlockLines));
+        }
+
+        state.meta = meta;
+        state.summary = summary;
+        state.blocks = blocks;
+        state.currentStepIndex = 0;
+        totalSessionSeconds = meta.durationMinutes * 60;
+        totalSecondsElapsed = 0;
+        state.lastAudienceBlock = blocks.find(b => b.type === 'SLIDE') || null;
+
+        return { meta, summary, blocks };
+    }
+
+    function parseBlock(type, lines) {
+        const blockData = { type, duration: 0, content: {} };
+        
+        if (type === 'SLIDE') {
+            let contentLines = [];
+            let inContent = false;
+            
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('Title:')) {
+                    let title = trimmed.substring('Title:'.length).trim();
+                    blockData.content.title = title.replace(/^["']|["']$/g, '');
+                } else if (trimmed.startsWith('Content:')) {
+                    inContent = true;
+                } else if (inContent) {
+                    const ltrimmed = line.replace(/^\s+/, '');
+                    contentLines.push(ltrimmed);
+                }
+            }
+            
+            let content = contentLines.join('\n').trim();
+            content = content.replace(/^["']|["']$/g, '');
+            blockData.content.content = content;
+            
+        } else if (type === 'ACTIVITY') {
+            let instructionLines = [];
+            let inInstructions = false;
+            
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('Type:')) {
+                    blockData.content.activityType = trimmed.substring('Type:'.length).trim();
+                } else if (trimmed.startsWith('Duration:')) {
+                    const durationMatch = trimmed.match(/Duration:\s*(\d+)/);
+                    if (durationMatch) blockData.duration = parseInt(durationMatch[1]);
+                } else if (trimmed.startsWith('Instructions:')) {
+                    inInstructions = true;
+                } else if (inInstructions) {
+                    const ltrimmed = line.replace(/^\s+/, '');
+                    instructionLines.push(ltrimmed);
+                }
+            }
+            
+            blockData.content.instructions = instructionLines.join('\n').trim();
+            
+        } else if (type === 'SCRIPT') {
+            let scriptLines = lines.map(line => line.replace(/^\s+/, ''));
+            let scriptContent = scriptLines.join('\n').trim();
+            scriptContent = scriptContent.replace(/^["']|["']$/g, '');
+            blockData.content.script = normalizeBullets(scriptContent);
+        }
+        
+        return blockData;
+    }
+
+    async function exportSlidesToPDF() {
+        const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const originalText = exportPdfBtn.textContent;
+        exportPdfBtn.disabled = true;
+        exportPdfBtn.textContent = 'Generating...';
+
+        const slides = state.blocks.filter(block => block.type === 'SLIDE');
+        if (slides.length === 0) {
+            alert('No slides available to export.');
+            exportPdfBtn.disabled = false;
+            exportPdfBtn.textContent = originalText;
+            return;
+        }
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+
+            for (let i = 0; i < slides.length; i++) {
+                if (i > 0) doc.addPage();
+                const slide = slides[i];
+                
+                doc.setFontSize(24);
+                doc.text(slide.content.title || '', 20, 30);
+                doc.setFontSize(14);
+                const content = slide.content.content || '';
+                const lines = doc.splitTextToSize(content, 170);
+                doc.text(lines, 20, 50);
+            }
+
+            doc.save(`${state.meta.segmentTitle || 'Slides'}.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert('Error generating PDF');
+        } finally {
+            exportPdfBtn.disabled = false;
+            exportPdfBtn.textContent = originalText;
+        }
+    }
+
+    function initializeApp() {
+        if (window.opener) {
+            setupPresentationView();
+        } else {
+            setupTrainerView();
+            updateNavigationButtons();
+            startTimer();
+            setupKeyboardShortcuts();
+        }
+    }
+
+    function setupTrainerView() {
+        root.innerHTML = `
+            <div class="trainer-layout">
+                <!-- Sidebar -->
+                <div class="trainer-sidebar">
+                    <div class="sidebar-header">
+                        <div class="sidebar-title">LipiKit Trainer</div>
+                        <div class="timer-display" id="sidebar-timer">00:00</div>
+                    </div>
+
+                    <!-- File Upload - Collapsible -->
+                    <div class="collapsible-section">
+                        <div class="section-title">Load Content</div>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="content-file" accept=".txt,.md">
+                            <label for="content-file" class="file-input-label">📁 Choose File (.txt/.md)</label>
+                        </div>
+                        <textarea id="raw-content-input" placeholder="...or paste content here"></textarea>
+                        <button id="load-content-btn" class="btn btn-primary">Load Content</button>
+                    </div>
+
+                    <!-- Metadata - Not collapsible -->
+                    <div class="meta-box">
+                        <div class="meta-title" id="meta-title">No Content Loaded</div>
+                        <div class="meta-item"><span class="meta-label">Tools:</span> <span id="meta-tools">N/A</span></div>
+                        <div class="meta-item"><span class="meta-label">Duration:</span> <span id="meta-duration">0 min</span></div>
+                    </div>
+
+                    <!-- Navigation - Collapsible -->
+                    <div class="collapsible-section">
+                        <div class="section-title">Navigation</div>
+                        <div class="btn-group">
+                            <button id="prev-btn" class="btn btn-secondary">← Prev</button>
+                            <div class="step-counter" id="step-count">0 / 0</div>
+                            <button id="next-btn" class="btn btn-primary">Next →</button>
+                        </div>
+                    </div>
+
+                    <!-- Teleprompter Controls - Collapsible -->
+                    <div class="collapsible-section">
+                        <div class="section-title">Teleprompter Controls</div>
+                        <button id="auto-scroll-btn" class="btn btn-success">Start Auto-Scroll</button>
+                        <button id="stop-scroll-btn" class="btn btn-danger" style="display:none;">Stop Scroll</button>
+                        <input type="range" id="font-size-slider" min="12" max="36" value="18" class="font-size-slider">
+                        <div id="font-size-value" class="font-size-value">18px</div>
+                        <!-- NEW: Dark Mode Toggle -->
+                        <label class="theme-toggle">
+                            <span>Dark Mode</span>
+                            <input type="checkbox" id="theme-toggle">
+                        </label>
+                    </div>
+
+                    <!-- Actions - Collapsible -->
+                    <div class="collapsible-section">
+                        <div class="section-title">Actions</div>
+                        <button id="launch-presentation-btn" class="btn btn-success">🎥 Present</button>
+                        <button id="export-pdf-btn" class="btn btn-warning">📄 Export PDF</button>
+                    </div>
+
+                    <!-- Summary - Collapsible by default -->
+                    <div class="collapsible-section collapsed">
+                        <div class="section-title">Summary</div>
+                        <div class="summary-box">
+                            <div class="summary-item">
+                                <div class="summary-label">Goal:</div>
+                                <div class="summary-text" id="summary-goal">Load content...</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">Outcome:</div>
+                                <div class="summary-text" id="summary-outcome">N/A</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">Assessment:</div>
+                                <div class="summary-text" id="summary-assessment">N/A</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="trainer-main">
+                    <!-- Block Header -->
+                    <div class="content-card">
+                        <div class="block-header">
+                            <div>
+                                <span id="block-type" class="block-type-badge badge-slide">TYPE</span>
+                                <div class="block-title" id="slide-title">Title / Instructions</div>
+                            </div>
+                            <div class="block-duration">
+                                <div class="duration-label">Duration</div>
+                                <div class="duration-value" id="block-duration">-- min</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Teleprompter Area -->
+                    <div class="teleprompter-area" id="teleprompter-container">
+                        <div id="teleprompter-content">
+                            Please load content using the file uploader on the left to begin.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shortcuts Overlay -->
+            <div class="shortcuts-overlay" id="shortcuts-overlay">
+                <div class="shortcuts-content">
+                    <div class="shortcuts-title">Keyboard Shortcuts</div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">N / P</span>
+                        <span class="shortcut-desc">Next / Previous Step</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">T</span>
+                        <span class="shortcut-desc">Toggle Teleprompter</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">Space</span>
+                        <span class="shortcut-desc">Manual Scroll</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">?</span>
+                        <span class="shortcut-desc">Show Shortcuts</span>
+                    </div>
+                    <!-- NEW: Dark Mode Shortcut -->
+                    <div class="shortcut-item">
+                        <span class="shortcut-key">D</span>
+                        <span class="shortcut-desc">Toggle Dark Mode</span>
+                    </div>
+                    <button id="close-shortcuts" class="btn btn-primary">Close</button>
+                </div>
+            </div>
+        `;
+        setupTrainerViewListeners();
+    }
+
+    function setupTrainerViewListeners() {
+        const fileInput = document.getElementById('content-file');
+        const rawInput = document.getElementById('raw-content-input');
+        const loadBtn = document.getElementById('load-content-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const launchBtn = document.getElementById('launch-presentation-btn');
+        const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const autoScrollBtn = document.getElementById('auto-scroll-btn');
+        const stopScrollBtn = document.getElementById('stop-scroll-btn');
+        const shortcutsOverlay = document.getElementById('shortcuts-overlay');
+        const closeShortcuts = document.getElementById('close-shortcuts');
+
+        // Font size adjuster
+        const teleprompterContainer = document.getElementById('teleprompter-container');
+        const fontSizeSlider = document.getElementById('font-size-slider');
+        const fontSizeValue = document.getElementById('font-size-value');
+
+        if (fontSizeSlider && teleprompterContainer && fontSizeValue) {
+            const updateFontSize = (size) => {
+                teleprompterContainer.style.fontSize = `${size}px`;
+                fontSizeValue.textContent = `${size}px`;
+            };
+            fontSizeSlider.addEventListener('input', (e) => updateFontSize(e.target.value));
+            updateFontSize(18);
+        }
+
+        // NEW: Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle && teleprompterContainer) {
+            themeToggle.addEventListener('change', () => {
+                teleprompterContainer.classList.toggle('dark-mode', themeToggle.checked);
+                localStorage.setItem('teleprompterDarkMode', themeToggle.checked ? 'true' : 'false');
+            });
+            // Load saved preference
+            const savedTheme = localStorage.getItem('teleprompterDarkMode');
+            if (savedTheme === 'true') {
+                themeToggle.checked = true;
+                teleprompterContainer.classList.add('dark-mode');
+            }
+        }
+
+        // Micro-Interactions: Haptic on nav buttons
+        function hapticFeedback() {
+            if (navigator.vibrate) navigator.vibrate(50);
+        }
+        prevBtn.addEventListener('click', hapticFeedback);
+        nextBtn.addEventListener('click', hapticFeedback);
+
+        loadBtn.addEventListener('click', () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    rawInput.value = e.target.result;
+                    loadContent(e.target.result);
+                };
+                reader.readAsText(file);
+            } else {
+                const content = rawInput.value;
+                if (content.trim()) {
+                    loadContent(content);
+                }
+            }
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    rawInput.value = e.target.result;
+                    loadContent(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        prevBtn.addEventListener('click', prevStep);
+        nextBtn.addEventListener('click', nextStep);
+        launchBtn.addEventListener('click', launchPresentationView);
+        exportPdfBtn.addEventListener('click', exportSlidesToPDF);
+        autoScrollBtn.addEventListener('click', startAutoScroll);
+        stopScrollBtn.addEventListener('click', stopAutoScroll);
+
+        closeShortcuts.addEventListener('click', () => {
+            shortcutsOverlay.classList.remove('show');
+        });
+
+        // Collapsible sections listener
+        document.querySelectorAll('.section-title').forEach(title => {
+            title.addEventListener('click', () => {
+                const section = title.closest('.collapsible-section');
+                if (section) {
+                    section.classList.toggle('collapsed');
+                }
+            });
+        });
+
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'NAVIGATE_STEP') {
+                const { direction } = event.data;
+                if (direction === 'next') {
+                    nextStep();
+                } else if (direction === 'prev') {
+                    prevStep();
+                }
+            }
+        });
+    }
+
+    function startAutoScroll() {
+        const currentBlock = state.blocks[state.currentStepIndex];
+        if (!currentBlock || currentBlock.type !== 'SCRIPT') return;
+
+        const teleprompterContainer = document.getElementById('teleprompter-container');
+        if (!teleprompterContainer || isAutoScrolling) return;
+
+        const maxScroll = teleprompterContainer.scrollHeight - teleprompterContainer.clientHeight;
+        if (maxScroll <= 0) return;
+
+        teleprompterContainer.scrollTop = 0;
+        isAutoScrolling = true;
+        document.getElementById('auto-scroll-btn').style.display = 'none';
+        document.getElementById('stop-scroll-btn').style.display = 'block';
+
+        autoScrollInterval = setInterval(() => {
+            teleprompterContainer.scrollTop += SCROLL_SPEED;
+            if (teleprompterContainer.scrollTop >= maxScroll) {
+                stopAutoScroll();
+            }
+        }, 50);
+    }
+
+    function stopAutoScroll() {
+        if (autoScrollInterval) {
+            clearInterval(autoScrollInterval);
+            autoScrollInterval = null;
+        }
+        isAutoScrolling = false;
+        document.getElementById('auto-scroll-btn').style.display = 'block';
+        document.getElementById('stop-scroll-btn').style.display = 'none';
+    }
+
+    function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'n' || e.key === 'N') {
+                e.preventDefault();
+                nextStep();
+            } else if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                prevStep();
+            } else if (e.key === 't' || e.key === 'T') {
+                e.preventDefault();
+                if (isAutoScrolling) {
+                    stopAutoScroll();
+                } else {
+                    startAutoScroll();
+                }
+            } else if (e.key === '?') {
+                e.preventDefault();
+                document.getElementById('shortcuts-overlay').classList.add('show');
+            } else if (e.code === 'Space') {
+                e.preventDefault();
+                const teleprompterContainer = document.getElementById('teleprompter-container');
+                if (teleprompterContainer) {
+                    teleprompterContainer.scrollTop += teleprompterContainer.clientHeight / 2;
+                }
+            } else if (e.key === 'd' || e.key === 'D') { // NEW: Dark Mode Shortcut
+                e.preventDefault();
+                const themeToggle = document.getElementById('theme-toggle');
+                const teleprompterContainer = document.getElementById('teleprompter-container');
+                if (themeToggle && teleprompterContainer) {
+                    themeToggle.checked = !themeToggle.checked;
+                    teleprompterContainer.classList.toggle('dark-mode', themeToggle.checked);
+                    localStorage.setItem('teleprompterDarkMode', themeToggle.checked ? 'true' : 'false');
+                }
+            }
+        });
+    }
+
+    function loadContent(content) {
+        if (!content || content.trim() === '') return;
+        
+        parseCourseContent(content);
+
+        if (state.blocks.length === 0) {
+            state.meta.segmentTitle = "Parsing Error";
+            state.summary.goal = "Content must include [META], [SESSION SUMMARY], and blocks";
+        }
+
+        document.getElementById('meta-title').textContent = state.meta.segmentTitle;
+        document.getElementById('meta-tools').textContent = state.meta.toolsUsed || 'N/A';
+        document.getElementById('meta-duration').textContent = `${state.meta.durationMinutes} min`;
+        document.getElementById('summary-goal').textContent = state.summary.goal;
+        document.getElementById('summary-outcome').textContent = state.summary.keyOutcome || 'N/A';
+        document.getElementById('summary-assessment').textContent = state.summary.assessment || 'N/A';
+
+        const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const slides = state.blocks.filter(b => b.type === 'SLIDE');
+        exportPdfBtn.disabled = slides.length === 0;
+
+        clearInterval(timerInterval);
+        totalSecondsElapsed = 0;
+        startTimer();
+
+        if (state.blocks.length > 0) {
+            renderStep();
+        } else {
+            document.getElementById('slide-title').textContent = "Awaiting Content...";
+            document.getElementById('block-type').textContent = "ERROR";
+            document.getElementById('block-duration').textContent = "-- min";
+            document.getElementById('teleprompter-content').textContent = state.summary.goal;
+        }
+        
+        updateNavigationButtons();
+    }
+
+    function renderStep() {
+        const block = state.blocks[state.currentStepIndex];
+        if (!block) return;
+
+        if (block.type === 'SLIDE') {
+            state.lastAudienceBlock = block;
+        }
+
+        const blockTypeEl = document.getElementById('block-type');
+        const slideTitleEl = document.getElementById('slide-title');
+        const blockDurationEl = document.getElementById('block-duration');
+        const teleprompterContentEl = document.getElementById('teleprompter-content');
+        const teleprompterContainer = document.getElementById('teleprompter-container');
+
+        // PFA: Reset and re-trigger header animation
+        const contentCard = document.querySelector('.content-card');
+        contentCard.style.animation = 'none';
+        setTimeout(() => { contentCard.style.animation = 'slideIn 0.4s ease-out'; }, 10);
+
+        blockTypeEl.className = 'block-type-badge';
+
+        let contentHtml = '';
+
+        if (block.type === 'SLIDE') {
+            blockTypeEl.classList.add('badge-slide');
+            blockTypeEl.textContent = 'SLIDE';
+            slideTitleEl.textContent = block.content.title;
+            contentHtml = renderMarkdownInline(block.content.content || '');
+        } else if (block.type === 'ACTIVITY') {
+            blockTypeEl.classList.add('badge-activity');
+            blockTypeEl.textContent = 'ACTIVITY';
+            slideTitleEl.textContent = `ACTIVITY: ${block.content.activityType}`;
+            const instructionsHtml = block.content.instructions.replace(/\n/g, '<br>');
+            contentHtml = `
+                <p style="font-size:1.25rem;font-weight:600;color:#991b1b;margin-bottom:1rem;">INSTRUCTIONS:</p>
+                <p style="font-weight:700;color:#ef4444;">${instructionsHtml}</p>
+            `;
+        } else if (block.type === 'SCRIPT') {
+            blockTypeEl.classList.add('badge-script');
+            blockTypeEl.textContent = 'SCRIPT';
+            slideTitleEl.textContent = 'TRAINER NARRATION (Internal)';
+            contentHtml = marked.parse(block.content.script, { breaks: true });
+        }
+
+        blockDurationEl.textContent = block.duration > 0 ? `${block.duration} min` : 'N/A';
+
+        let nextPreview = '';
+        if (state.currentStepIndex < state.blocks.length - 1) {
+            const nextBlock = state.blocks[state.currentStepIndex + 1];
+            nextPreview = getBlockPreview(nextBlock);
+            contentHtml += `<div style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #e5e7eb;"><h4 style="font-size:1.125rem;font-weight:600;color:#6b7280;">Next: ${nextPreview}</h4></div>`;
+        }
+
+        teleprompterContentEl.innerHTML = contentHtml;
+        // PFA: Re-trigger content animation
+        teleprompterContentEl.style.animation = 'none';
+        setTimeout(() => { teleprompterContentEl.style.animation = 'fadeGrow 0.6s ease-in'; }, 10);
+        document.getElementById('step-count').textContent = `${state.currentStepIndex + 1} / ${state.blocks.length}`;
+
+        if (teleprompterContainer) {
+            teleprompterContainer.scrollTop = 0;
+        }
+
+        stopAutoScroll();
+
+        // Micro-Interactions: Confetti on last step
+        if (state.currentStepIndex === state.blocks.length - 1) {
+            confettiBurst();
+        }
+
+        let displayBlock = null;
+        let displayIndex = -1;
+        if (block.type === 'SLIDE') {
+            displayBlock = block;
+            displayIndex = state.currentStepIndex;
+        } else if (state.lastAudienceBlock) {
+            displayBlock = state.lastAudienceBlock;
+            displayIndex = state.blocks.findIndex(b => b === state.lastAudienceBlock);
+        }
+        syncPresentationView(state.currentStepIndex, displayBlock, state.blocks.length, displayIndex);
+    }
+
+    // Micro-Interactions: Simple confetti burst
+    function confettiBurst() {
+        const emojis = ['🎉', '🎊', '✨', '🚀'];
+        for (let i = 0; i < 10; i++) {
+            const emoji = document.createElement('div');
+            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.style.position = 'fixed';
+            emoji.style.left = Math.random() * 100 + 'vw';
+            emoji.style.top = '-10px';
+            emoji.style.fontSize = '2rem';
+            emoji.style.pointerEvents = 'none';
+            emoji.style.zIndex = '9999';
+            emoji.style.animation = 'fall 2s linear forwards';
+            document.body.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 2000);
+        }
+    }
+
+    // Add fall animation for confetti
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    function nextStep() {
+        if (state.blocks.length === 0) return;
+        if (state.currentStepIndex < state.blocks.length - 1) {
+            state.currentStepIndex++;
+            renderStep();
+            updateNavigationButtons();
+        }
+    }
+
+    function prevStep() {
+        if (state.blocks.length === 0) return;
+        if (state.currentStepIndex > 0) {
+            state.currentStepIndex--;
+            renderStep();
+            updateNavigationButtons();
+        }
+    }
+
+    function updateNavigationButtons() {
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        if (prevBtn) prevBtn.disabled = state.blocks.length === 0 || state.currentStepIndex === 0;
+        if (nextBtn) nextBtn.disabled = state.blocks.length === 0 || state.currentStepIndex === state.blocks.length - 1;
+    }
+
+    function formatTime(totalSeconds) {
+        const absSeconds = Math.abs(totalSeconds);
+        const minutes = Math.floor(absSeconds / 60);
+        const seconds = absSeconds % 60;
+        const sign = totalSeconds < 0 ? '-' : '';
+        const pad = (num) => num.toString().padStart(2, '0');
+        return `${sign}${pad(minutes)}:${pad(seconds)}`;
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+
+        const timerEl = document.getElementById('sidebar-timer');
+        if (!timerEl) return;
+
+        totalSessionSeconds = state.meta.durationMinutes * 60;
+
+        timerInterval = setInterval(() => {
+            totalSecondsElapsed++;
+            updateTimer(timerEl);
+        }, 1000);
+
+        updateTimer(timerEl);
+    }
+
+    function updateTimer(timerEl) {
+        if (!timerEl) return;
+
+        const remainingSeconds = totalSessionSeconds - totalSecondsElapsed;
+        timerEl.textContent = formatTime(remainingSeconds);
+        
+        const fiveMinutes = 5 * 60;
+
+        if (totalSessionSeconds > 0 && remainingSeconds <= fiveMinutes && remainingSeconds > 0) {
+            timerEl.classList.add('timer-warning');
+        } else {
+            timerEl.classList.remove('timer-warning');
+        }
+    }
+
+    function launchPresentationView() {
+        if (presentationWindow && !presentationWindow.closed) {
+            presentationWindow.focus();
+            return;
+        }
+        
+        const width = 800;
+        const height = 600;
+        const left = (window.screen.width / 2) - (width / 2);
+        const top = (window.screen.height / 2) - (height / 2);
+
+        presentationWindow = window.open(
+            window.location.href, 
+            APP_ID + '-presentation', 
+            `width=${width},height=${height},left=${left},top=${top}`
+        );
+        
+        setTimeout(() => {
+            if (state.blocks.length > 0) {
+                const block = state.blocks[state.currentStepIndex];
+                let displayBlock = null;
+                let displayIndex = -1;
+                if (block.type === 'SLIDE') {
+                    displayBlock = block;
+                    displayIndex = state.currentStepIndex;
+                } else if (state.lastAudienceBlock) {
+                    displayBlock = state.lastAudienceBlock;
+                    displayIndex = state.blocks.findIndex(b => b === state.lastAudienceBlock);
+                }
+                syncPresentationView(state.currentStepIndex, displayBlock, state.blocks.length, displayIndex);
+            }
+        }, 500);
+    }
+
+    function syncPresentationView(stepIndex, displayBlock, totalSteps, displayIndex) {
+        if (presentationWindow && !presentationWindow.closed) {
+            presentationWindow.postMessage({ 
+                type: 'UPDATE_STEP', 
+                data: { 
+                    block: displayBlock, 
+                    stepIndex: stepIndex, 
+                    totalSteps: totalSteps,
+                    displayIndex: displayIndex
+                } 
+            }, '*');
+        }
+    }
+
+    function setupPresentationView() {
+        root.innerHTML = `
+            <div class="presentation-view">
+                <div class="presentation-branding">Dhanesh Aradhye | SparkyMinis.com</div>
+                
+                <div id="presentation-content-display" style="flex-grow:1;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;width:100%;padding-top:1rem;overflow-y:auto;">
+                    <div style="color:#9ca3af;font-size:1.25rem;">Launch LipiKit Trainer and load content to begin</div>
+                </div>
+                
+                <div class="presentation-nav" style="justify-content: center; gap: 1rem;">
+                    <button id="presentation-prev-btn" disabled>← Prev</button>
+                    <span id="presentation-step-count">-- / --</span>
+                    <button id="presentation-next-btn" disabled>Next →</button>
+                </div>
+                
+                <div class="progress-container">
+                    <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+                </div>
+
+                <!-- Timer Overlay -->
+                <div class="timer-overlay" id="timer-overlay">
+                    <div class="timer-popup">
+                        <div id="timer-input-mode">
+                            <div class="timer-input-group">
+                                <div>
+                                    <input type="number" id="timer-minutes" class="timer-input" placeholder="0" min="0" max="59">
+                                    <div class="timer-input-label">Minutes</div>
+                                </div>
+                                <div>
+                                    <input type="number" id="timer-seconds" class="timer-input" placeholder="0" min="0" max="59">
+                                    <div class="timer-input-label">Seconds</div>
+                                </div>
+                            </div>
+                            <div class="timer-controls">
+                                <button class="timer-btn timer-btn-play" id="timer-start-btn">▶ Start</button>
+                                <button class="timer-btn timer-btn-close" id="timer-close-btn">Close</button>
+                            </div>
+                        </div>
+
+                        <div id="timer-running-mode" style="display:none;">
+                            <div class="timer-display-large" id="timer-display">00:00</div>
+                            <div class="timer-controls">
+                                <button class="timer-btn timer-btn-play" id="timer-pause-btn">⏸ Pause</button>
+                                <button class="timer-btn timer-btn-close" id="timer-stop-btn">Stop</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="presentation-timer-btn">⏱ Timer</button>
+        `;
+
+        const currentDisplay = { index: -1 };
+
+        const prevBtn = document.getElementById('presentation-prev-btn');
+        const nextBtn = document.getElementById('presentation-next-btn');
+        const stepCountEl = document.getElementById('presentation-step-count');
+        const progressBar = document.getElementById('progress-bar');
+
+        // Timer functionality
+        let timerInterval = null;
+        let timerRunning = false;
+        let totalSeconds = 0;
+        let timerCompleted = false;
+
+        const timerOverlay = document.getElementById('timer-overlay');
+        const timerBtn = document.getElementById('presentation-timer-btn');
+        const timerInputMode = document.getElementById('timer-input-mode');
+        const timerRunningMode = document.getElementById('timer-running-mode');
+        const timerMinutesInput = document.getElementById('timer-minutes');
+        const timerSecondsInput = document.getElementById('timer-seconds');
+        const timerDisplay = document.getElementById('timer-display');
+        const timerStartBtn = document.getElementById('timer-start-btn');
+        const timerCloseBtn = document.getElementById('timer-close-btn');
+        const timerPauseBtn = document.getElementById('timer-pause-btn');
+        const timerStopBtn = document.getElementById('timer-stop-btn');
+
+        function formatTimerDisplay(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = formatTimerDisplay(totalSeconds);
+            if (totalSeconds <= 10 && totalSeconds > 0) {
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+        }
+
+        function startTimer() {
+            if (timerRunning) return;
+            
+            const mins = parseInt(timerMinutesInput.value) || 0;
+            const secs = parseInt(timerSecondsInput.value) || 0;
+            totalSeconds = mins * 60 + secs;
+
+            if (totalSeconds <= 0) {
+                alert('Please enter a valid time');
+                return;
+            }
+
+            timerRunning = true;
+            timerCompleted = false;
+            timerInputMode.style.display = 'none';
+            timerRunningMode.style.display = 'block';
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                totalSeconds--;
+                updateTimerDisplay();
+
+                if (totalSeconds <= 0 && !timerCompleted) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    timerCompleted = true;
+                    timerDisplay.textContent = '00:00';
+                    timerDisplay.classList.add('warning');
+                    playTimerSound();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                timerPauseBtn.textContent = '▶ Resume';
+            } else {
+                timerRunning = true;
+                timerPauseBtn.textContent = '⏸ Pause';
+                timerInterval = setInterval(() => {
+                    totalSeconds--;
+                    updateTimerDisplay();
+
+                    if (totalSeconds <= 0 && !timerCompleted) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        timerCompleted = true;
+                        timerDisplay.textContent = '00:00';
+                        timerDisplay.classList.add('warning');
+                        playTimerSound();
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            timerRunning = false;
+            timerCompleted = false;
+            timerPauseBtn.textContent = '⏸ Pause';
+            timerInputMode.style.display = 'block';
+            timerRunningMode.style.display = 'none';
+            timerMinutesInput.value = '';
+            timerSecondsInput.value = '';
+            totalSeconds = 0;
+        }
+
+        function playTimerSound() {
+            // Create a simple beep sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 800;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        timerBtn.addEventListener('click', () => {
+            timerOverlay.classList.add('show');
+            timerMinutesInput.focus();
+        });
+
+        timerCloseBtn.addEventListener('click', () => {
+            stopTimer();
+            timerOverlay.classList.remove('show');
+        });
+
+        timerStartBtn.addEventListener('click', startTimer);
+        timerPauseBtn.addEventListener('click', pauseTimer);
+        timerStopBtn.addEventListener('click', () => {
+            stopTimer();
+            timerOverlay.classList.remove('show');
+        });
+
+        // Allow Enter key to start timer
+        timerSecondsInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startTimer();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({ type: 'NAVIGATE_STEP', direction: 'prev' }, '*');
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({ type: 'NAVIGATE_STEP', direction: 'next' }, '*');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevBtn.click();
+            } else if (e.key === 'ArrowRight') {
+                nextBtn.click();
+            }
+        });
+
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'UPDATE_STEP') {
+                const data = event.data.data;
+                updatePresentationView(data, currentDisplay);
+                prevBtn.disabled = data.stepIndex === 0;
+                nextBtn.disabled = data.stepIndex === data.totalSteps - 1;
+                stepCountEl.textContent = `${data.stepIndex + 1} / ${data.totalSteps}`;
+                const progress = ((data.stepIndex + 1) / data.totalSteps) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+        });
+    }
+
+    function updatePresentationView(data, currentDisplay) {
+        const { block, displayIndex } = data;
+        if (displayIndex === currentDisplay.index) {
+            return;
+        }
+        currentDisplay.index = displayIndex;
+
+        const contentEl = document.getElementById('presentation-content-display');
+        
+        if (!block || block.type !== 'SLIDE') {
+            contentEl.innerHTML = `<div style="color:#9ca3af;font-size:2rem;">Trainer narration only</div>`;
+            return;
+        }
+
+        const titleHtml = renderMarkdownInline(block.content.title || '');
+        const contentHtml = renderMarkdownInline(block.content.content || '');
+        contentEl.innerHTML = `
+            <div class="presentation-title">${titleHtml}</div>
+            <div class="presentation-content">${contentHtml}</div>
+        `;
+    }
+
+    initializeApp();
+</script>
+</body>
+</html>
