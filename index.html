@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +34,7 @@
         .trainer-sidebar {
             background: linear-gradient(180deg, #f8f9fa 0%, #f3f4f6 100%);
             padding: 1.25rem;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.08);
+            box-shadow: 2px 0 15px rgba(0, 0, 0, 0.08);
             overflow-y: auto;
             max-height: 100vh;
             border-right: 1px solid #e5e7eb;
@@ -73,8 +74,15 @@
         }
 
         @keyframes flash-red {
-            0%, 100% { color: #ef4444; }
-            50% { color: #333; }
+
+            0%,
+            100% {
+                color: #ef4444;
+            }
+
+            50% {
+                color: #333;
+            }
         }
 
         /* Collapsible Sections */
@@ -84,7 +92,8 @@
         }
 
         .collapsible-section.collapsed {
-            max-height: 2.5rem; /* Title only */
+            max-height: 2.5rem;
+            /* Title only */
         }
 
         .section-title {
@@ -111,7 +120,7 @@
         .section {
             margin-bottom: 1.25rem;
         }
-        
+
         .collapsible-section {
             margin-bottom: 0.75rem;
         }
@@ -297,7 +306,7 @@
             background: white;
             border-radius: 12px;
             padding: 2rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
             margin-bottom: 1.5rem;
             animation: slideIn 0.4s ease-out;
             border: 1px solid #e5e7eb;
@@ -364,7 +373,7 @@
             min-height: 65vh;
             max-height: 75vh;
             overflow-y: auto;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
             line-height: 1.8;
             font-size: 18px;
             color: #1f2937;
@@ -376,7 +385,7 @@
         .teleprompter-area.dark-mode {
             background: #1e2a44;
             color: #e5e7eb;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
         }
 
         .teleprompter-area.dark-mode p,
@@ -418,13 +427,27 @@
 
         /* Progressive Focus Animations (PFA) Keyframes */
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         @keyframes fadeGrow {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* Font size adjuster slider */
@@ -582,7 +605,7 @@
 
         .presentation-nav button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .presentation-nav button:disabled {
@@ -620,6 +643,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -649,7 +673,7 @@
             padding: 2rem;
             border-radius: 15px;
             max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
         .shortcuts-title {
@@ -713,6 +737,7 @@
                 opacity: 0;
                 transform: scale(0.5);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -744,8 +769,15 @@
         }
 
         @keyframes pulse-warning {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .timer-controls {
@@ -854,230 +886,231 @@
         }
     </style>
 </head>
+
 <body>
 
-<div id="app-container"></div>
+    <div id="app-container"></div>
 
-<script>
-    let state = {
-        meta: { segmentTitle: "No Content Loaded", durationMinutes: 0, toolsUsed: "" },
-        summary: { goal: "Load content to see summary.", keyOutcome: "", assessment: "" },
-        blocks: [],
-        currentStepIndex: 0,
-        lastAudienceBlock: null,
-    };
-    let presentationWindow = null;
-    let timerInterval = null;
-    let totalSecondsElapsed = 0;
-    let totalSessionSeconds = 0;
-    let autoScrollInterval = null;
-    let isAutoScrolling = false;
-    const SCROLL_SPEED = 1;
-    const APP_ID = 'trainer-assistant-v1';
-    const root = document.getElementById('app-container');
+    <script>
+        let state = {
+            meta: { segmentTitle: "No Content Loaded", durationMinutes: 0, toolsUsed: "" },
+            summary: { goal: "Load content to see summary.", keyOutcome: "", assessment: "" },
+            blocks: [],
+            currentStepIndex: 0,
+            lastAudienceBlock: null,
+        };
+        let presentationWindow = null;
+        let timerInterval = null;
+        let totalSecondsElapsed = 0;
+        let totalSessionSeconds = 0;
+        let autoScrollInterval = null;
+        let isAutoScrolling = false;
+        const SCROLL_SPEED = 1;
+        const APP_ID = 'trainer-assistant-v1';
+        const root = document.getElementById('app-container');
 
-    function normalizeBullets(content) {
-        return content.replace(/^[\s•\-\>]\s+/gm, '- ');
-    }
-
-    function renderMarkdownInline(content) {
-        if (!content) return '';
-        return content.split('\n').map(line => marked.parseInline(line) || line).join('<br>');
-    }
-
-    function getBlockPreview(block) {
-        if (block.type === 'SLIDE') {
-            return block.content.title || 'Slide';
-        } else if (block.type === 'SCRIPT') {
-            return 'Trainer Narration';
-        } else if (block.type === 'ACTIVITY') {
-            return `Activity: ${block.content.activityType || 'Unnamed'}`;
-        }
-        return block.type;
-    }
-
-    function parseCourseContent(content) {
-        const lines = content.trim().split('\n');
-        let blocks = [];
-        let meta = { segmentTitle: "Untitled Segment", durationMinutes: 0, toolsUsed: "" };
-        let summary = { goal: "", keyOutcome: "", assessment: "" };
-
-        const titleLine = lines.find(line => line.trim().startsWith('# '));
-        if (titleLine) {
-            meta.segmentTitle = titleLine.substring(2).trim();
+        function normalizeBullets(content) {
+            return content.replace(/^[\s•\-\>]\s+/gm, '- ');
         }
 
-        const metaStartIdx = lines.findIndex(line => line.trim() === '[META]');
-        if (metaStartIdx !== -1) {
-            let i = metaStartIdx + 1;
-            while (i < lines.length && !lines[i].trim().startsWith('[')) {
+        function renderMarkdownInline(content) {
+            if (!content) return '';
+            return content.split('\n').map(line => marked.parseInline(line) || line).join('<br>');
+        }
+
+        function getBlockPreview(block) {
+            if (block.type === 'SLIDE') {
+                return block.content.title || 'Slide';
+            } else if (block.type === 'SCRIPT') {
+                return 'Trainer Narration';
+            } else if (block.type === 'ACTIVITY') {
+                return `Activity: ${block.content.activityType || 'Unnamed'}`;
+            }
+            return block.type;
+        }
+
+        function parseCourseContent(content) {
+            const lines = content.trim().split('\n');
+            let blocks = [];
+            let meta = { segmentTitle: "Untitled Segment", durationMinutes: 0, toolsUsed: "" };
+            let summary = { goal: "", keyOutcome: "", assessment: "" };
+
+            const titleLine = lines.find(line => line.trim().startsWith('# '));
+            if (titleLine) {
+                meta.segmentTitle = titleLine.substring(2).trim();
+            }
+
+            const metaStartIdx = lines.findIndex(line => line.trim() === '[META]');
+            if (metaStartIdx !== -1) {
+                let i = metaStartIdx + 1;
+                while (i < lines.length && !lines[i].trim().startsWith('[')) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('Duration:')) {
+                        const durationMatch = line.match(/Duration:\s*(\d+)/);
+                        if (durationMatch) meta.durationMinutes = parseInt(durationMatch[1]);
+                    } else if (line.startsWith('Tools Used:')) {
+                        meta.toolsUsed = line.substring('Tools Used:'.length).trim();
+                    }
+                    i++;
+                }
+            }
+
+            const summaryStartIdx = lines.findIndex(line => line.trim() === '[SESSION SUMMARY]');
+            if (summaryStartIdx !== -1) {
+                let i = summaryStartIdx + 1;
+                while (i < lines.length && !lines[i].trim().startsWith('[')) {
+                    const line = lines[i].trim();
+                    if (line.startsWith('Goal:')) {
+                        summary.goal = line.substring('Goal:'.length).trim();
+                    } else if (line.startsWith('Key Outcome:')) {
+                        summary.keyOutcome = line.substring('Key Outcome:'.length).trim();
+                    } else if (line.startsWith('Assessment:')) {
+                        summary.assessment = line.substring('Assessment:'.length).trim();
+                    }
+                    i++;
+                }
+            }
+
+            let currentBlock = null;
+            let currentBlockLines = [];
+
+            for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
-                if (line.startsWith('Duration:')) {
-                    const durationMatch = line.match(/Duration:\s*(\d+)/);
-                    if (durationMatch) meta.durationMinutes = parseInt(durationMatch[1]);
-                } else if (line.startsWith('Tools Used:')) {
-                    meta.toolsUsed = line.substring('Tools Used:'.length).trim();
-                }
-                i++;
-            }
-        }
 
-        const summaryStartIdx = lines.findIndex(line => line.trim() === '[SESSION SUMMARY]');
-        if (summaryStartIdx !== -1) {
-            let i = summaryStartIdx + 1;
-            while (i < lines.length && !lines[i].trim().startsWith('[')) {
-                const line = lines[i].trim();
-                if (line.startsWith('Goal:')) {
-                    summary.goal = line.substring('Goal:'.length).trim();
-                } else if (line.startsWith('Key Outcome:')) {
-                    summary.keyOutcome = line.substring('Key Outcome:'.length).trim();
-                } else if (line.startsWith('Assessment:')) {
-                    summary.assessment = line.substring('Assessment:'.length).trim();
-                }
-                i++;
-            }
-        }
-
-        let currentBlock = null;
-        let currentBlockLines = [];
-        
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            
-            if (line === '[SLIDE]' || line === '[SCRIPT]' || line === '[ACTIVITY]') {
-                if (currentBlock) {
-                    blocks.push(parseBlock(currentBlock, currentBlockLines));
-                }
-                currentBlock = line.substring(1, line.length - 1);
-                currentBlockLines = [];
-            } else if (currentBlock) {
-                currentBlockLines.push(lines[i]);
-            }
-        }
-        
-        if (currentBlock) {
-            blocks.push(parseBlock(currentBlock, currentBlockLines));
-        }
-
-        state.meta = meta;
-        state.summary = summary;
-        state.blocks = blocks;
-        state.currentStepIndex = 0;
-        totalSessionSeconds = meta.durationMinutes * 60;
-        totalSecondsElapsed = 0;
-        state.lastAudienceBlock = blocks.find(b => b.type === 'SLIDE') || null;
-
-        return { meta, summary, blocks };
-    }
-
-    function parseBlock(type, lines) {
-        const blockData = { type, duration: 0, content: {} };
-        
-        if (type === 'SLIDE') {
-            let contentLines = [];
-            let inContent = false;
-            
-            for (let line of lines) {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('Title:')) {
-                    let title = trimmed.substring('Title:'.length).trim();
-                    blockData.content.title = title.replace(/^["']|["']$/g, '');
-                } else if (trimmed.startsWith('Content:')) {
-                    inContent = true;
-                } else if (inContent) {
-                    const ltrimmed = line.replace(/^\s+/, '');
-                    contentLines.push(ltrimmed);
+                if (line === '[SLIDE]' || line === '[SCRIPT]' || line === '[ACTIVITY]') {
+                    if (currentBlock) {
+                        blocks.push(parseBlock(currentBlock, currentBlockLines));
+                    }
+                    currentBlock = line.substring(1, line.length - 1);
+                    currentBlockLines = [];
+                } else if (currentBlock) {
+                    currentBlockLines.push(lines[i]);
                 }
             }
-            
-            let content = contentLines.join('\n').trim();
-            content = content.replace(/^["']|["']$/g, '');
-            blockData.content.content = content;
-            
-        } else if (type === 'ACTIVITY') {
-            let instructionLines = [];
-            let inInstructions = false;
-            
-            for (let line of lines) {
-                const trimmed = line.trim();
-                if (trimmed.startsWith('Type:')) {
-                    blockData.content.activityType = trimmed.substring('Type:'.length).trim();
-                } else if (trimmed.startsWith('Duration:')) {
-                    const durationMatch = trimmed.match(/Duration:\s*(\d+)/);
-                    if (durationMatch) blockData.duration = parseInt(durationMatch[1]);
-                } else if (trimmed.startsWith('Instructions:')) {
-                    inInstructions = true;
-                } else if (inInstructions) {
-                    const ltrimmed = line.replace(/^\s+/, '');
-                    instructionLines.push(ltrimmed);
+
+            if (currentBlock) {
+                blocks.push(parseBlock(currentBlock, currentBlockLines));
+            }
+
+            state.meta = meta;
+            state.summary = summary;
+            state.blocks = blocks;
+            state.currentStepIndex = 0;
+            totalSessionSeconds = meta.durationMinutes * 60;
+            totalSecondsElapsed = 0;
+            state.lastAudienceBlock = blocks.find(b => b.type === 'SLIDE') || null;
+
+            return { meta, summary, blocks };
+        }
+
+        function parseBlock(type, lines) {
+            const blockData = { type, duration: 0, content: {} };
+
+            if (type === 'SLIDE') {
+                let contentLines = [];
+                let inContent = false;
+
+                for (let line of lines) {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith('Title:')) {
+                        let title = trimmed.substring('Title:'.length).trim();
+                        blockData.content.title = title.replace(/^["']|["']$/g, '');
+                    } else if (trimmed.startsWith('Content:')) {
+                        inContent = true;
+                    } else if (inContent) {
+                        const ltrimmed = line.replace(/^\s+/, '');
+                        contentLines.push(ltrimmed);
+                    }
                 }
-            }
-            
-            blockData.content.instructions = instructionLines.join('\n').trim();
-            
-        } else if (type === 'SCRIPT') {
-            let scriptLines = lines.map(line => line.replace(/^\s+/, ''));
-            let scriptContent = scriptLines.join('\n').trim();
-            scriptContent = scriptContent.replace(/^["']|["']$/g, '');
-            blockData.content.script = normalizeBullets(scriptContent);
-        }
-        
-        return blockData;
-    }
 
-    async function exportSlidesToPDF() {
-        const exportPdfBtn = document.getElementById('export-pdf-btn');
-        const originalText = exportPdfBtn.textContent;
-        exportPdfBtn.disabled = true;
-        exportPdfBtn.textContent = 'Generating...';
+                let content = contentLines.join('\n').trim();
+                content = content.replace(/^["']|["']$/g, '');
+                blockData.content.content = content;
 
-        const slides = state.blocks.filter(block => block.type === 'SLIDE');
-        if (slides.length === 0) {
-            alert('No slides available to export.');
-            exportPdfBtn.disabled = false;
-            exportPdfBtn.textContent = originalText;
-            return;
-        }
+            } else if (type === 'ACTIVITY' || type === 'PAUSE & PRACTICE') {
+                let instructionLines = [];
+                let inInstructions = false;
 
-        try {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
+                for (let line of lines) {
+                    const trimmed = line.trim();
+                    if (trimmed.startsWith('Type:')) {
+                        blockData.content.activityType = trimmed.substring('Type:'.length).trim();
+                    } else if (trimmed.startsWith('Duration:')) {
+                        const durationMatch = trimmed.match(/Duration:\s*(\d+)/);
+                        if (durationMatch) blockData.duration = parseInt(durationMatch[1]);
+                    } else if (trimmed.startsWith('Instructions:')) {
+                        inInstructions = true;
+                    } else if (inInstructions) {
+                        const ltrimmed = line.replace(/^\s+/, '');
+                        instructionLines.push(ltrimmed);
+                    }
+                }
 
-            for (let i = 0; i < slides.length; i++) {
-                if (i > 0) doc.addPage();
-                const slide = slides[i];
-                
-                doc.setFontSize(24);
-                doc.text(slide.content.title || '', 20, 30);
-                doc.setFontSize(14);
-                const content = slide.content.content || '';
-                const lines = doc.splitTextToSize(content, 170);
-                doc.text(lines, 20, 50);
+                blockData.content.instructions = instructionLines.join('\n').trim();
+
+            } else if (type === 'SCRIPT') {
+                let scriptLines = lines.map(line => line.replace(/^\s+/, ''));
+                let scriptContent = scriptLines.join('\n').trim();
+                scriptContent = scriptContent.replace(/^["']|["']$/g, '');
+                blockData.content.script = normalizeBullets(scriptContent);
             }
 
-            doc.save(`${state.meta.segmentTitle || 'Slides'}.pdf`);
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            alert('Error generating PDF');
-        } finally {
-            exportPdfBtn.disabled = false;
-            exportPdfBtn.textContent = originalText;
+            return blockData;
         }
-    }
 
-    function initializeApp() {
-        if (window.opener) {
-            setupPresentationView();
-        } else {
-            setupTrainerView();
-            updateNavigationButtons();
-            startTimer();
-            setupKeyboardShortcuts();
+        async function exportSlidesToPDF() {
+            const exportPdfBtn = document.getElementById('export-pdf-btn');
+            const originalText = exportPdfBtn.textContent;
+            exportPdfBtn.disabled = true;
+            exportPdfBtn.textContent = 'Generating...';
+
+            const slides = state.blocks.filter(block => block.type === 'SLIDE');
+            if (slides.length === 0) {
+                alert('No slides available to export.');
+                exportPdfBtn.disabled = false;
+                exportPdfBtn.textContent = originalText;
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+
+                for (let i = 0; i < slides.length; i++) {
+                    if (i > 0) doc.addPage();
+                    const slide = slides[i];
+
+                    doc.setFontSize(24);
+                    doc.text(slide.content.title || '', 20, 30);
+                    doc.setFontSize(14);
+                    const content = slide.content.content || '';
+                    const lines = doc.splitTextToSize(content, 170);
+                    doc.text(lines, 20, 50);
+                }
+
+                doc.save(`${state.meta.segmentTitle || 'Slides'}.pdf`);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF');
+            } finally {
+                exportPdfBtn.disabled = false;
+                exportPdfBtn.textContent = originalText;
+            }
         }
-    }
 
-    function setupTrainerView() {
-        root.innerHTML = `
+        function initializeApp() {
+            if (window.opener) {
+                setupPresentationView();
+            } else {
+                setupTrainerView();
+                updateNavigationButtons();
+                startTimer();
+                setupKeyboardShortcuts();
+            }
+        }
+
+        function setupTrainerView() {
+            root.innerHTML = `
             <div class="trainer-layout">
                 <!-- Sidebar -->
                 <div class="trainer-sidebar">
@@ -1209,454 +1242,453 @@
                 </div>
             </div>
         `;
-        setupTrainerViewListeners();
-    }
-
-    function setupTrainerViewListeners() {
-        const fileInput = document.getElementById('content-file');
-        const rawInput = document.getElementById('raw-content-input');
-        const loadBtn = document.getElementById('load-content-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const launchBtn = document.getElementById('launch-presentation-btn');
-        const exportPdfBtn = document.getElementById('export-pdf-btn');
-        const autoScrollBtn = document.getElementById('auto-scroll-btn');
-        const stopScrollBtn = document.getElementById('stop-scroll-btn');
-        const shortcutsOverlay = document.getElementById('shortcuts-overlay');
-        const closeShortcuts = document.getElementById('close-shortcuts');
-
-        // Font size adjuster
-        const teleprompterContainer = document.getElementById('teleprompter-container');
-        const fontSizeSlider = document.getElementById('font-size-slider');
-        const fontSizeValue = document.getElementById('font-size-value');
-
-        if (fontSizeSlider && teleprompterContainer && fontSizeValue) {
-            const updateFontSize = (size) => {
-                teleprompterContainer.style.fontSize = `${size}px`;
-                fontSizeValue.textContent = `${size}px`;
-            };
-            fontSizeSlider.addEventListener('input', (e) => updateFontSize(e.target.value));
-            updateFontSize(18);
+            setupTrainerViewListeners();
         }
 
-        // NEW: Dark Mode Toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        if (themeToggle && teleprompterContainer) {
-            themeToggle.addEventListener('change', () => {
-                teleprompterContainer.classList.toggle('dark-mode', themeToggle.checked);
-                localStorage.setItem('teleprompterDarkMode', themeToggle.checked ? 'true' : 'false');
-            });
-            // Load saved preference
-            const savedTheme = localStorage.getItem('teleprompterDarkMode');
-            if (savedTheme === 'true') {
-                themeToggle.checked = true;
-                teleprompterContainer.classList.add('dark-mode');
-            }
-        }
+        function setupTrainerViewListeners() {
+            const fileInput = document.getElementById('content-file');
+            const rawInput = document.getElementById('raw-content-input');
+            const loadBtn = document.getElementById('load-content-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const launchBtn = document.getElementById('launch-presentation-btn');
+            const exportPdfBtn = document.getElementById('export-pdf-btn');
+            const autoScrollBtn = document.getElementById('auto-scroll-btn');
+            const stopScrollBtn = document.getElementById('stop-scroll-btn');
+            const shortcutsOverlay = document.getElementById('shortcuts-overlay');
+            const closeShortcuts = document.getElementById('close-shortcuts');
 
-        // Micro-Interactions: Haptic on nav buttons
-        function hapticFeedback() {
-            if (navigator.vibrate) navigator.vibrate(50);
-        }
-        prevBtn.addEventListener('click', hapticFeedback);
-        nextBtn.addEventListener('click', hapticFeedback);
+            // Font size adjuster
+            const teleprompterContainer = document.getElementById('teleprompter-container');
+            const fontSizeSlider = document.getElementById('font-size-slider');
+            const fontSizeValue = document.getElementById('font-size-value');
 
-        loadBtn.addEventListener('click', () => {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    rawInput.value = e.target.result;
-                    loadContent(e.target.result);
+            if (fontSizeSlider && teleprompterContainer && fontSizeValue) {
+                const updateFontSize = (size) => {
+                    teleprompterContainer.style.fontSize = `${size}px`;
+                    fontSizeValue.textContent = `${size}px`;
                 };
-                reader.readAsText(file);
-            } else {
-                const content = rawInput.value;
-                if (content.trim()) {
-                    loadContent(content);
-                }
+                fontSizeSlider.addEventListener('input', (e) => updateFontSize(e.target.value));
+                updateFontSize(18);
             }
-        });
 
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    rawInput.value = e.target.result;
-                    loadContent(e.target.result);
-                };
-                reader.readAsText(file);
-            }
-        });
-
-        prevBtn.addEventListener('click', prevStep);
-        nextBtn.addEventListener('click', nextStep);
-        launchBtn.addEventListener('click', launchPresentationView);
-        exportPdfBtn.addEventListener('click', exportSlidesToPDF);
-        autoScrollBtn.addEventListener('click', startAutoScroll);
-        stopScrollBtn.addEventListener('click', stopAutoScroll);
-
-        closeShortcuts.addEventListener('click', () => {
-            shortcutsOverlay.classList.remove('show');
-        });
-
-        // Collapsible sections listener
-        document.querySelectorAll('.section-title').forEach(title => {
-            title.addEventListener('click', () => {
-                const section = title.closest('.collapsible-section');
-                if (section) {
-                    section.classList.toggle('collapsed');
-                }
-            });
-        });
-
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'NAVIGATE_STEP') {
-                const { direction } = event.data;
-                if (direction === 'next') {
-                    nextStep();
-                } else if (direction === 'prev') {
-                    prevStep();
-                }
-            }
-        });
-    }
-
-    function startAutoScroll() {
-        const currentBlock = state.blocks[state.currentStepIndex];
-        if (!currentBlock || currentBlock.type !== 'SCRIPT') return;
-
-        const teleprompterContainer = document.getElementById('teleprompter-container');
-        if (!teleprompterContainer || isAutoScrolling) return;
-
-        const maxScroll = teleprompterContainer.scrollHeight - teleprompterContainer.clientHeight;
-        if (maxScroll <= 0) return;
-
-        teleprompterContainer.scrollTop = 0;
-        isAutoScrolling = true;
-        document.getElementById('auto-scroll-btn').style.display = 'none';
-        document.getElementById('stop-scroll-btn').style.display = 'block';
-
-        autoScrollInterval = setInterval(() => {
-            teleprompterContainer.scrollTop += SCROLL_SPEED;
-            if (teleprompterContainer.scrollTop >= maxScroll) {
-                stopAutoScroll();
-            }
-        }, 50);
-    }
-
-    function stopAutoScroll() {
-        if (autoScrollInterval) {
-            clearInterval(autoScrollInterval);
-            autoScrollInterval = null;
-        }
-        isAutoScrolling = false;
-        document.getElementById('auto-scroll-btn').style.display = 'block';
-        document.getElementById('stop-scroll-btn').style.display = 'none';
-    }
-
-    function setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'n' || e.key === 'N') {
-                e.preventDefault();
-                nextStep();
-            } else if (e.key === 'p' || e.key === 'P') {
-                e.preventDefault();
-                prevStep();
-            } else if (e.key === 't' || e.key === 'T') {
-                e.preventDefault();
-                if (isAutoScrolling) {
-                    stopAutoScroll();
-                } else {
-                    startAutoScroll();
-                }
-            } else if (e.key === '?') {
-                e.preventDefault();
-                document.getElementById('shortcuts-overlay').classList.add('show');
-            } else if (e.code === 'Space') {
-                e.preventDefault();
-                const teleprompterContainer = document.getElementById('teleprompter-container');
-                if (teleprompterContainer) {
-                    teleprompterContainer.scrollTop += teleprompterContainer.clientHeight / 2;
-                }
-            } else if (e.key === 'd' || e.key === 'D') { // NEW: Dark Mode Shortcut
-                e.preventDefault();
-                const themeToggle = document.getElementById('theme-toggle');
-                const teleprompterContainer = document.getElementById('teleprompter-container');
-                if (themeToggle && teleprompterContainer) {
-                    themeToggle.checked = !themeToggle.checked;
+            // NEW: Dark Mode Toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle && teleprompterContainer) {
+                themeToggle.addEventListener('change', () => {
                     teleprompterContainer.classList.toggle('dark-mode', themeToggle.checked);
                     localStorage.setItem('teleprompterDarkMode', themeToggle.checked ? 'true' : 'false');
+                });
+                // Load saved preference
+                const savedTheme = localStorage.getItem('teleprompterDarkMode');
+                if (savedTheme === 'true') {
+                    themeToggle.checked = true;
+                    teleprompterContainer.classList.add('dark-mode');
                 }
             }
-        });
-    }
 
-    function loadContent(content) {
-        if (!content || content.trim() === '') return;
-        
-        parseCourseContent(content);
+            // Micro-Interactions: Haptic on nav buttons
+            function hapticFeedback() {
+                if (navigator.vibrate) navigator.vibrate(50);
+            }
+            prevBtn.addEventListener('click', hapticFeedback);
+            nextBtn.addEventListener('click', hapticFeedback);
 
-        if (state.blocks.length === 0) {
-            state.meta.segmentTitle = "Parsing Error";
-            state.summary.goal = "Content must include [META], [SESSION SUMMARY], and blocks";
+            loadBtn.addEventListener('click', () => {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        rawInput.value = e.target.result;
+                        loadContent(e.target.result);
+                    };
+                    reader.readAsText(file);
+                } else {
+                    const content = rawInput.value;
+                    if (content.trim()) {
+                        loadContent(content);
+                    }
+                }
+            });
+
+            fileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        rawInput.value = e.target.result;
+                        loadContent(e.target.result);
+                    };
+                    reader.readAsText(file);
+                }
+            });
+
+            prevBtn.addEventListener('click', prevStep);
+            nextBtn.addEventListener('click', nextStep);
+            launchBtn.addEventListener('click', launchPresentationView);
+            exportPdfBtn.addEventListener('click', exportSlidesToPDF);
+            autoScrollBtn.addEventListener('click', startAutoScroll);
+            stopScrollBtn.addEventListener('click', stopAutoScroll);
+
+            closeShortcuts.addEventListener('click', () => {
+                shortcutsOverlay.classList.remove('show');
+            });
+
+            // Collapsible sections listener
+            document.querySelectorAll('.section-title').forEach(title => {
+                title.addEventListener('click', () => {
+                    const section = title.closest('.collapsible-section');
+                    if (section) {
+                        section.classList.toggle('collapsed');
+                    }
+                });
+            });
+
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'NAVIGATE_STEP') {
+                    const { direction } = event.data;
+                    if (direction === 'next') {
+                        nextStep();
+                    } else if (direction === 'prev') {
+                        prevStep();
+                    }
+                }
+            });
         }
 
-        document.getElementById('meta-title').textContent = state.meta.segmentTitle;
-        document.getElementById('meta-tools').textContent = state.meta.toolsUsed || 'N/A';
-        document.getElementById('meta-duration').textContent = `${state.meta.durationMinutes} min`;
-        document.getElementById('summary-goal').textContent = state.summary.goal;
-        document.getElementById('summary-outcome').textContent = state.summary.keyOutcome || 'N/A';
-        document.getElementById('summary-assessment').textContent = state.summary.assessment || 'N/A';
+        function startAutoScroll() {
+            const currentBlock = state.blocks[state.currentStepIndex];
+            if (!currentBlock || currentBlock.type !== 'SCRIPT') return;
 
-        const exportPdfBtn = document.getElementById('export-pdf-btn');
-        const slides = state.blocks.filter(b => b.type === 'SLIDE');
-        exportPdfBtn.disabled = slides.length === 0;
+            const teleprompterContainer = document.getElementById('teleprompter-container');
+            if (!teleprompterContainer || isAutoScrolling) return;
 
-        clearInterval(timerInterval);
-        totalSecondsElapsed = 0;
-        startTimer();
+            const maxScroll = teleprompterContainer.scrollHeight - teleprompterContainer.clientHeight;
+            if (maxScroll <= 0) return;
 
-        if (state.blocks.length > 0) {
-            renderStep();
-        } else {
-            document.getElementById('slide-title').textContent = "Awaiting Content...";
-            document.getElementById('block-type').textContent = "ERROR";
-            document.getElementById('block-duration').textContent = "-- min";
-            document.getElementById('teleprompter-content').textContent = state.summary.goal;
-        }
-        
-        updateNavigationButtons();
-    }
+            teleprompterContainer.scrollTop = 0;
+            isAutoScrolling = true;
+            document.getElementById('auto-scroll-btn').style.display = 'none';
+            document.getElementById('stop-scroll-btn').style.display = 'block';
 
-    function renderStep() {
-        const block = state.blocks[state.currentStepIndex];
-        if (!block) return;
-
-        if (block.type === 'SLIDE') {
-            state.lastAudienceBlock = block;
+            autoScrollInterval = setInterval(() => {
+                teleprompterContainer.scrollTop += SCROLL_SPEED;
+                if (teleprompterContainer.scrollTop >= maxScroll) {
+                    stopAutoScroll();
+                }
+            }, 50);
         }
 
-        const blockTypeEl = document.getElementById('block-type');
-        const slideTitleEl = document.getElementById('slide-title');
-        const blockDurationEl = document.getElementById('block-duration');
-        const teleprompterContentEl = document.getElementById('teleprompter-content');
-        const teleprompterContainer = document.getElementById('teleprompter-container');
+        function stopAutoScroll() {
+            if (autoScrollInterval) {
+                clearInterval(autoScrollInterval);
+                autoScrollInterval = null;
+            }
+            isAutoScrolling = false;
+            document.getElementById('auto-scroll-btn').style.display = 'block';
+            document.getElementById('stop-scroll-btn').style.display = 'none';
+        }
 
-        // PFA: Reset and re-trigger header animation
-        const contentCard = document.querySelector('.content-card');
-        contentCard.style.animation = 'none';
-        setTimeout(() => { contentCard.style.animation = 'slideIn 0.4s ease-out'; }, 10);
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'n' || e.key === 'N') {
+                    e.preventDefault();
+                    nextStep();
+                } else if (e.key === 'p' || e.key === 'P') {
+                    e.preventDefault();
+                    prevStep();
+                } else if (e.key === 't' || e.key === 'T') {
+                    e.preventDefault();
+                    if (isAutoScrolling) {
+                        stopAutoScroll();
+                    } else {
+                        startAutoScroll();
+                    }
+                } else if (e.key === '?') {
+                    e.preventDefault();
+                    document.getElementById('shortcuts-overlay').classList.add('show');
+                } else if (e.code === 'Space') {
+                    e.preventDefault();
+                    const teleprompterContainer = document.getElementById('teleprompter-container');
+                    if (teleprompterContainer) {
+                        teleprompterContainer.scrollTop += teleprompterContainer.clientHeight / 2;
+                    }
+                } else if (e.key === 'd' || e.key === 'D') { // NEW: Dark Mode Shortcut
+                    e.preventDefault();
+                    const themeToggle = document.getElementById('theme-toggle');
+                    const teleprompterContainer = document.getElementById('teleprompter-container');
+                    if (themeToggle && teleprompterContainer) {
+                        themeToggle.checked = !themeToggle.checked;
+                        teleprompterContainer.classList.toggle('dark-mode', themeToggle.checked);
+                        localStorage.setItem('teleprompterDarkMode', themeToggle.checked ? 'true' : 'false');
+                    }
+                }
+            });
+        }
 
-        blockTypeEl.className = 'block-type-badge';
+        function loadContent(content) {
+            if (!content || content.trim() === '') return;
 
-        let contentHtml = '';
+            parseCourseContent(content);
 
-        if (block.type === 'SLIDE') {
-            blockTypeEl.classList.add('badge-slide');
-            blockTypeEl.textContent = 'SLIDE';
-            slideTitleEl.textContent = block.content.title;
-            contentHtml = renderMarkdownInline(block.content.content || '');
-        } else if (block.type === 'ACTIVITY') {
-            blockTypeEl.classList.add('badge-activity');
-            blockTypeEl.textContent = 'ACTIVITY';
-            slideTitleEl.textContent = `ACTIVITY: ${block.content.activityType}`;
-            const instructionsHtml = block.content.instructions.replace(/\n/g, '<br>');
-            contentHtml = `
+            if (state.blocks.length === 0) {
+                state.meta.segmentTitle = "Parsing Error";
+                state.summary.goal = "Content must include [META], [SESSION SUMMARY], and blocks";
+            }
+
+            document.getElementById('meta-title').textContent = state.meta.segmentTitle;
+            document.getElementById('meta-tools').textContent = state.meta.toolsUsed || 'N/A';
+            document.getElementById('meta-duration').textContent = `${state.meta.durationMinutes} min`;
+            document.getElementById('summary-goal').textContent = state.summary.goal;
+            document.getElementById('summary-outcome').textContent = state.summary.keyOutcome || 'N/A';
+            document.getElementById('summary-assessment').textContent = state.summary.assessment || 'N/A';
+
+            const exportPdfBtn = document.getElementById('export-pdf-btn');
+            const slides = state.blocks.filter(b => b.type === 'SLIDE');
+            exportPdfBtn.disabled = slides.length === 0;
+
+            clearInterval(timerInterval);
+            totalSecondsElapsed = 0;
+            startTimer();
+
+            if (state.blocks.length > 0) {
+                renderStep();
+            } else {
+                document.getElementById('slide-title').textContent = "Awaiting Content...";
+                document.getElementById('block-type').textContent = "ERROR";
+                document.getElementById('block-duration').textContent = "-- min";
+                document.getElementById('teleprompter-content').textContent = state.summary.goal;
+            }
+
+            updateNavigationButtons();
+        }
+
+        function renderStep() {
+            const block = state.blocks[state.currentStepIndex];
+            if (!block) return;
+
+            if (block.type === 'SLIDE') {
+                state.lastAudienceBlock = block;
+            }
+
+            const blockTypeEl = document.getElementById('block-type');
+            const slideTitleEl = document.getElementById('slide-title');
+            const blockDurationEl = document.getElementById('block-duration');
+            const teleprompterContentEl = document.getElementById('teleprompter-content');
+            const teleprompterContainer = document.getElementById('teleprompter-container');
+
+            // PFA: Reset and re-trigger header animation
+            const contentCard = document.querySelector('.content-card');
+            contentCard.style.animation = 'none';
+            setTimeout(() => { contentCard.style.animation = 'slideIn 0.4s ease-out'; }, 10);
+
+            blockTypeEl.className = 'block-type-badge';
+
+            let contentHtml = '';
+
+            if (block.type === 'SLIDE') {
+                blockTypeEl.classList.add('badge-slide');
+                blockTypeEl.textContent = 'SLIDE';
+                slideTitleEl.textContent = block.content.title;
+                contentHtml = renderMarkdownInline(block.content.content || '');
+            } else if (block.type === 'ACTIVITY' || block.type === 'PAUSE & PRACTICE') {
+                blockTypeEl.classList.add('badge-activity');
+                blockTypeEl.textContent = block.type === 'PAUSE & PRACTICE' ? 'PAUSE & PRACTICE' : 'ACTIVITY';
+                slideTitleEl.textContent = `${block.type}: ${block.content.activityType}`;
+                const instructionsHtml = block.content.instructions.replace(/\n/g, '<br>');
+                contentHtml = `
                 <p style="font-size:1.25rem;font-weight:600;color:#991b1b;margin-bottom:1rem;">INSTRUCTIONS:</p>
                 <p style="font-weight:700;color:#ef4444;">${instructionsHtml}</p>
             `;
-        } else if (block.type === 'SCRIPT') {
-            blockTypeEl.classList.add('badge-script');
-            blockTypeEl.textContent = 'SCRIPT';
-            slideTitleEl.textContent = 'TRAINER NARRATION (Internal)';
-            contentHtml = marked.parse(block.content.script, { breaks: true });
+            } else if (block.type === 'SCRIPT') {
+                blockTypeEl.classList.add('badge-script');
+                blockTypeEl.textContent = 'SCRIPT';
+                slideTitleEl.textContent = 'TRAINER NARRATION (Internal)';
+                contentHtml = marked.parse(block.content.script, { breaks: true });
+            }
+
+            blockDurationEl.textContent = block.duration > 0 ? `${block.duration} min` : 'N/A';
+
+            let nextPreview = '';
+            if (state.currentStepIndex < state.blocks.length - 1) {
+                const nextBlock = state.blocks[state.currentStepIndex + 1];
+                nextPreview = getBlockPreview(nextBlock);
+                contentHtml += `<div style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #e5e7eb;"><h4 style="font-size:1.125rem;font-weight:600;color:#6b7280;">Next: ${nextPreview}</h4></div>`;
+            }
+
+            teleprompterContentEl.innerHTML = contentHtml;
+            // PFA: Re-trigger content animation
+            teleprompterContentEl.style.animation = 'none';
+            setTimeout(() => { teleprompterContentEl.style.animation = 'fadeGrow 0.6s ease-in'; }, 10);
+            document.getElementById('step-count').textContent = `${state.currentStepIndex + 1} / ${state.blocks.length}`;
+
+            if (teleprompterContainer) {
+                teleprompterContainer.scrollTop = 0;
+            }
+
+            stopAutoScroll();
+
+            // Micro-Interactions: Confetti on last step
+            if (state.currentStepIndex === state.blocks.length - 1) {
+                confettiBurst();
+            }
+
+            let displayBlock = null;
+            let displayIndex = -1;
+            if (block.type === 'SLIDE') {
+                displayBlock = block;
+                displayIndex = state.currentStepIndex;
+            } else if (state.lastAudienceBlock) {
+                displayBlock = state.lastAudienceBlock;
+                displayIndex = state.blocks.findIndex(b => b === state.lastAudienceBlock);
+            }
+            syncPresentationView(state.currentStepIndex, displayBlock, state.blocks.length, displayIndex);
         }
 
-        blockDurationEl.textContent = block.duration > 0 ? `${block.duration} min` : 'N/A';
-
-        let nextPreview = '';
-        if (state.currentStepIndex < state.blocks.length - 1) {
-            const nextBlock = state.blocks[state.currentStepIndex + 1];
-            nextPreview = getBlockPreview(nextBlock);
-            contentHtml += `<div style="margin-top:2rem;padding-top:1.5rem;border-top:2px solid #e5e7eb;"><h4 style="font-size:1.125rem;font-weight:600;color:#6b7280;">Next: ${nextPreview}</h4></div>`;
+        // Micro-Interactions: Simple confetti burst
+        function confettiBurst() {
+            const emojis = ['🎉', '🎊', '✨', '🚀'];
+            for (let i = 0; i < 10; i++) {
+                const emoji = document.createElement('div');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.position = 'fixed';
+                emoji.style.left = Math.random() * 100 + 'vw';
+                emoji.style.top = '-10px';
+                emoji.style.fontSize = '2rem';
+                emoji.style.pointerEvents = 'none';
+                emoji.style.zIndex = '9999';
+                emoji.style.animation = 'fall 2s linear forwards';
+                document.body.appendChild(emoji);
+                setTimeout(() => emoji.remove(), 2000);
+            }
         }
 
-        teleprompterContentEl.innerHTML = contentHtml;
-        // PFA: Re-trigger content animation
-        teleprompterContentEl.style.animation = 'none';
-        setTimeout(() => { teleprompterContentEl.style.animation = 'fadeGrow 0.6s ease-in'; }, 10);
-        document.getElementById('step-count').textContent = `${state.currentStepIndex + 1} / ${state.blocks.length}`;
-
-        if (teleprompterContainer) {
-            teleprompterContainer.scrollTop = 0;
-        }
-
-        stopAutoScroll();
-
-        // Micro-Interactions: Confetti on last step
-        if (state.currentStepIndex === state.blocks.length - 1) {
-            confettiBurst();
-        }
-
-        let displayBlock = null;
-        let displayIndex = -1;
-        if (block.type === 'SLIDE') {
-            displayBlock = block;
-            displayIndex = state.currentStepIndex;
-        } else if (state.lastAudienceBlock) {
-            displayBlock = state.lastAudienceBlock;
-            displayIndex = state.blocks.findIndex(b => b === state.lastAudienceBlock);
-        }
-        syncPresentationView(state.currentStepIndex, displayBlock, state.blocks.length, displayIndex);
-    }
-
-    // Micro-Interactions: Simple confetti burst
-    function confettiBurst() {
-        const emojis = ['🎉', '🎊', '✨', '🚀'];
-        for (let i = 0; i < 10; i++) {
-            const emoji = document.createElement('div');
-            emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-            emoji.style.position = 'fixed';
-            emoji.style.left = Math.random() * 100 + 'vw';
-            emoji.style.top = '-10px';
-            emoji.style.fontSize = '2rem';
-            emoji.style.pointerEvents = 'none';
-            emoji.style.zIndex = '9999';
-            emoji.style.animation = 'fall 2s linear forwards';
-            document.body.appendChild(emoji);
-            setTimeout(() => emoji.remove(), 2000);
-        }
-    }
-
-    // Add fall animation for confetti
-    const style = document.createElement('style');
-    style.textContent = `
+        // Add fall animation for confetti
+        const style = document.createElement('style');
+        style.textContent = `
         @keyframes fall {
             to { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
     `;
-    document.head.appendChild(style);
+        document.head.appendChild(style);
 
-    function nextStep() {
-        if (state.blocks.length === 0) return;
-        if (state.currentStepIndex < state.blocks.length - 1) {
-            state.currentStepIndex++;
-            renderStep();
-            updateNavigationButtons();
-        }
-    }
-
-    function prevStep() {
-        if (state.blocks.length === 0) return;
-        if (state.currentStepIndex > 0) {
-            state.currentStepIndex--;
-            renderStep();
-            updateNavigationButtons();
-        }
-    }
-
-    function updateNavigationButtons() {
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-
-        if (prevBtn) prevBtn.disabled = state.blocks.length === 0 || state.currentStepIndex === 0;
-        if (nextBtn) nextBtn.disabled = state.blocks.length === 0 || state.currentStepIndex === state.blocks.length - 1;
-    }
-
-    function formatTime(totalSeconds) {
-        const absSeconds = Math.abs(totalSeconds);
-        const minutes = Math.floor(absSeconds / 60);
-        const seconds = absSeconds % 60;
-        const sign = totalSeconds < 0 ? '-' : '';
-        const pad = (num) => num.toString().padStart(2, '0');
-        return `${sign}${pad(minutes)}:${pad(seconds)}`;
-    }
-
-    function startTimer() {
-        if (timerInterval) clearInterval(timerInterval);
-
-        const timerEl = document.getElementById('sidebar-timer');
-        if (!timerEl) return;
-
-        totalSessionSeconds = state.meta.durationMinutes * 60;
-
-        timerInterval = setInterval(() => {
-            totalSecondsElapsed++;
-            updateTimer(timerEl);
-        }, 1000);
-
-        updateTimer(timerEl);
-    }
-
-    function updateTimer(timerEl) {
-        if (!timerEl) return;
-
-        const remainingSeconds = totalSessionSeconds - totalSecondsElapsed;
-        timerEl.textContent = formatTime(remainingSeconds);
-        
-        const fiveMinutes = 5 * 60;
-
-        if (totalSessionSeconds > 0 && remainingSeconds <= fiveMinutes && remainingSeconds > 0) {
-            timerEl.classList.add('timer-warning');
-        } else {
-            timerEl.classList.remove('timer-warning');
-        }
-    }
-
-    function launchPresentationView() {
-        if (presentationWindow && !presentationWindow.closed) {
-            presentationWindow.focus();
-            return;
-        }
-        
-        const width = 800;
-        const height = 600;
-        const left = (window.screen.width / 2) - (width / 2);
-        const top = (window.screen.height / 2) - (height / 2);
-
-        presentationWindow = window.open(
-            // window.location.href, 
-            window.location.pathname + '?mode=presenter',
-            APP_ID + '-presentation', 
-            `width=${width},height=${height},left=${left},top=${top}`
-        );
-        
-        setTimeout(() => {
-            if (state.blocks.length > 0) {
-                const block = state.blocks[state.currentStepIndex];
-                let displayBlock = null;
-                let displayIndex = -1;
-                if (block.type === 'SLIDE') {
-                    displayBlock = block;
-                    displayIndex = state.currentStepIndex;
-                } else if (state.lastAudienceBlock) {
-                    displayBlock = state.lastAudienceBlock;
-                    displayIndex = state.blocks.findIndex(b => b === state.lastAudienceBlock);
-                }
-                syncPresentationView(state.currentStepIndex, displayBlock, state.blocks.length, displayIndex);
+        function nextStep() {
+            if (state.blocks.length === 0) return;
+            if (state.currentStepIndex < state.blocks.length - 1) {
+                state.currentStepIndex++;
+                renderStep();
+                updateNavigationButtons();
             }
-        }, 500);
-    }
-
-    function syncPresentationView(stepIndex, displayBlock, totalSteps, displayIndex) {
-        if (presentationWindow && !presentationWindow.closed) {
-            presentationWindow.postMessage({ 
-                type: 'UPDATE_STEP', 
-                data: { 
-                    block: displayBlock, 
-                    stepIndex: stepIndex, 
-                    totalSteps: totalSteps,
-                    displayIndex: displayIndex
-                } 
-            }, '*');
         }
-    }
 
-    function setupPresentationView() {
-        document.title = 'SparkyMinis | Presenter View';
-        root.innerHTML = `
+        function prevStep() {
+            if (state.blocks.length === 0) return;
+            if (state.currentStepIndex > 0) {
+                state.currentStepIndex--;
+                renderStep();
+                updateNavigationButtons();
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+
+            if (prevBtn) prevBtn.disabled = state.blocks.length === 0 || state.currentStepIndex === 0;
+            if (nextBtn) nextBtn.disabled = state.blocks.length === 0 || state.currentStepIndex === state.blocks.length - 1;
+        }
+
+        function formatTime(totalSeconds) {
+            const absSeconds = Math.abs(totalSeconds);
+            const minutes = Math.floor(absSeconds / 60);
+            const seconds = absSeconds % 60;
+            const sign = totalSeconds < 0 ? '-' : '';
+            const pad = (num) => num.toString().padStart(2, '0');
+            return `${sign}${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            const timerEl = document.getElementById('sidebar-timer');
+            if (!timerEl) return;
+
+            totalSessionSeconds = state.meta.durationMinutes * 60;
+
+            timerInterval = setInterval(() => {
+                totalSecondsElapsed++;
+                updateTimer(timerEl);
+            }, 1000);
+
+            updateTimer(timerEl);
+        }
+
+        function updateTimer(timerEl) {
+            if (!timerEl) return;
+
+            const remainingSeconds = totalSessionSeconds - totalSecondsElapsed;
+            timerEl.textContent = formatTime(remainingSeconds);
+
+            const fiveMinutes = 5 * 60;
+
+            if (totalSessionSeconds > 0 && remainingSeconds <= fiveMinutes && remainingSeconds > 0) {
+                timerEl.classList.add('timer-warning');
+            } else {
+                timerEl.classList.remove('timer-warning');
+            }
+        }
+
+        function launchPresentationView() {
+            if (presentationWindow && !presentationWindow.closed) {
+                presentationWindow.focus();
+                return;
+            }
+
+            const width = 800;
+            const height = 600;
+            const left = (window.screen.width / 2) - (width / 2);
+            const top = (window.screen.height / 2) - (height / 2);
+
+            presentationWindow = window.open(
+                window.location.pathname + '?mode=presenter',
+                APP_ID + '-presentation',
+                `width=${width},height=${height},left=${left},top=${top}`
+            );
+
+            setTimeout(() => {
+                if (state.blocks.length > 0) {
+                    const block = state.blocks[state.currentStepIndex];
+                    let displayBlock = null;
+                    let displayIndex = -1;
+                    if (block.type === 'SLIDE') {
+                        displayBlock = block;
+                        displayIndex = state.currentStepIndex;
+                    } else if (state.lastAudienceBlock) {
+                        displayBlock = state.lastAudienceBlock;
+                        displayIndex = state.blocks.findIndex(b => b === state.lastAudienceBlock);
+                    }
+                    syncPresentationView(state.currentStepIndex, displayBlock, state.blocks.length, displayIndex);
+                }
+            }, 500);
+        }
+
+        function syncPresentationView(stepIndex, displayBlock, totalSteps, displayIndex) {
+            if (presentationWindow && !presentationWindow.closed) {
+                presentationWindow.postMessage({
+                    type: 'UPDATE_STEP',
+                    data: {
+                        block: displayBlock,
+                        stepIndex: stepIndex,
+                        totalSteps: totalSteps,
+                        displayIndex: displayIndex
+                    }
+                }, '*');
+            }
+        }
+
+        function setupPresentationView() {
+            document.title = 'SparkyMinis | Presenter View';
+            root.innerHTML = `
             <div class="presentation-view">
                 <div class="presentation-branding">Dhanesh Aradhye | SparkyMinis.com</div>
                 
@@ -1707,87 +1739,64 @@
             <button id="presentation-timer-btn">⏱ Timer</button>
         `;
 
-        const currentDisplay = { index: -1 };
+            const currentDisplay = { index: -1 };
 
-        const prevBtn = document.getElementById('presentation-prev-btn');
-        const nextBtn = document.getElementById('presentation-next-btn');
-        const stepCountEl = document.getElementById('presentation-step-count');
-        const progressBar = document.getElementById('progress-bar');
+            const prevBtn = document.getElementById('presentation-prev-btn');
+            const nextBtn = document.getElementById('presentation-next-btn');
+            const stepCountEl = document.getElementById('presentation-step-count');
+            const progressBar = document.getElementById('progress-bar');
 
-        // Timer functionality
-        let timerInterval = null;
-        let timerRunning = false;
-        let totalSeconds = 0;
-        let timerCompleted = false;
+            // Timer functionality
+            let timerInterval = null;
+            let timerRunning = false;
+            let totalSeconds = 0;
+            let timerCompleted = false;
 
-        const timerOverlay = document.getElementById('timer-overlay');
-        const timerBtn = document.getElementById('presentation-timer-btn');
-        const timerInputMode = document.getElementById('timer-input-mode');
-        const timerRunningMode = document.getElementById('timer-running-mode');
-        const timerMinutesInput = document.getElementById('timer-minutes');
-        const timerSecondsInput = document.getElementById('timer-seconds');
-        const timerDisplay = document.getElementById('timer-display');
-        const timerStartBtn = document.getElementById('timer-start-btn');
-        const timerCloseBtn = document.getElementById('timer-close-btn');
-        const timerPauseBtn = document.getElementById('timer-pause-btn');
-        const timerStopBtn = document.getElementById('timer-stop-btn');
+            const timerOverlay = document.getElementById('timer-overlay');
+            const timerBtn = document.getElementById('presentation-timer-btn');
+            const timerInputMode = document.getElementById('timer-input-mode');
+            const timerRunningMode = document.getElementById('timer-running-mode');
+            const timerMinutesInput = document.getElementById('timer-minutes');
+            const timerSecondsInput = document.getElementById('timer-seconds');
+            const timerDisplay = document.getElementById('timer-display');
+            const timerStartBtn = document.getElementById('timer-start-btn');
+            const timerCloseBtn = document.getElementById('timer-close-btn');
+            const timerPauseBtn = document.getElementById('timer-pause-btn');
+            const timerStopBtn = document.getElementById('timer-stop-btn');
 
-        function formatTimerDisplay(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
-
-        function updateTimerDisplay() {
-            timerDisplay.textContent = formatTimerDisplay(totalSeconds);
-            if (totalSeconds <= 10 && totalSeconds > 0) {
-                timerDisplay.classList.add('warning');
-            } else {
-                timerDisplay.classList.remove('warning');
-            }
-        }
-
-        function startTimer() {
-            if (timerRunning) return;
-            
-            const mins = parseInt(timerMinutesInput.value) || 0;
-            const secs = parseInt(timerSecondsInput.value) || 0;
-            totalSeconds = mins * 60 + secs;
-
-            if (totalSeconds <= 0) {
-                alert('Please enter a valid time');
-                return;
+            function formatTimerDisplay(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
             }
 
-            timerRunning = true;
-            timerCompleted = false;
-            timerInputMode.style.display = 'none';
-            timerRunningMode.style.display = 'block';
-            updateTimerDisplay();
+            function updateTimerDisplay() {
+                timerDisplay.textContent = formatTimerDisplay(totalSeconds);
+                if (totalSeconds <= 10 && totalSeconds > 0) {
+                    timerDisplay.classList.add('warning');
+                } else {
+                    timerDisplay.classList.remove('warning');
+                }
+            }
 
-            timerInterval = setInterval(() => {
-                totalSeconds--;
+            function startTimer() {
+                if (timerRunning) return;
+
+                const mins = parseInt(timerMinutesInput.value) || 0;
+                const secs = parseInt(timerSecondsInput.value) || 0;
+                totalSeconds = mins * 60 + secs;
+
+                if (totalSeconds <= 0) {
+                    alert('Please enter a valid time');
+                    return;
+                }
+
+                timerRunning = true;
+                timerCompleted = false;
+                timerInputMode.style.display = 'none';
+                timerRunningMode.style.display = 'block';
                 updateTimerDisplay();
 
-                if (totalSeconds <= 0 && !timerCompleted) {
-                    clearInterval(timerInterval);
-                    timerRunning = false;
-                    timerCompleted = true;
-                    timerDisplay.textContent = '00:00';
-                    timerDisplay.classList.add('warning');
-                    playTimerSound();
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            if (timerRunning) {
-                clearInterval(timerInterval);
-                timerRunning = false;
-                timerPauseBtn.textContent = '▶ Resume';
-            } else {
-                timerRunning = true;
-                timerPauseBtn.textContent = '⏸ Pause';
                 timerInterval = setInterval(() => {
                     totalSeconds--;
                     updateTimerDisplay();
@@ -1802,121 +1811,145 @@
                     }
                 }, 1000);
             }
+
+            function pauseTimer() {
+                if (timerRunning) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    timerPauseBtn.textContent = '▶ Resume';
+                } else {
+                    timerRunning = true;
+                    timerPauseBtn.textContent = '⏸ Pause';
+                    timerInterval = setInterval(() => {
+                        totalSeconds--;
+                        updateTimerDisplay();
+
+                        if (totalSeconds <= 0 && !timerCompleted) {
+                            clearInterval(timerInterval);
+                            timerRunning = false;
+                            timerCompleted = true;
+                            timerDisplay.textContent = '00:00';
+                            timerDisplay.classList.add('warning');
+                            playTimerSound();
+                        }
+                    }, 1000);
+                }
+            }
+
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                timerRunning = false;
+                timerCompleted = false;
+                timerPauseBtn.textContent = '⏸ Pause';
+                timerInputMode.style.display = 'block';
+                timerRunningMode.style.display = 'none';
+                timerMinutesInput.value = '';
+                timerSecondsInput.value = '';
+                totalSeconds = 0;
+            }
+
+            function playTimerSound() {
+                // Create a simple beep sound using Web Audio API
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+
+            timerBtn.addEventListener('click', () => {
+                timerOverlay.classList.add('show');
+                timerMinutesInput.focus();
+            });
+
+            timerCloseBtn.addEventListener('click', () => {
+                stopTimer();
+                timerOverlay.classList.remove('show');
+            });
+
+            timerStartBtn.addEventListener('click', startTimer);
+            timerPauseBtn.addEventListener('click', pauseTimer);
+            timerStopBtn.addEventListener('click', () => {
+                stopTimer();
+                timerOverlay.classList.remove('show');
+            });
+
+            // Allow Enter key to start timer
+            timerSecondsInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    startTimer();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({ type: 'NAVIGATE_STEP', direction: 'prev' }, '*');
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({ type: 'NAVIGATE_STEP', direction: 'next' }, '*');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                } else if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                }
+            });
+
+            window.addEventListener('message', (event) => {
+                if (event.data.type === 'UPDATE_STEP') {
+                    const data = event.data.data;
+                    updatePresentationView(data, currentDisplay);
+                    prevBtn.disabled = data.stepIndex === 0;
+                    nextBtn.disabled = data.stepIndex === data.totalSteps - 1;
+                    stepCountEl.textContent = `${data.stepIndex + 1} / ${data.totalSteps}`;
+                    const progress = ((data.stepIndex + 1) / data.totalSteps) * 100;
+                    progressBar.style.width = `${progress}%`;
+                }
+            });
         }
 
-        function stopTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
+        function updatePresentationView(data, currentDisplay) {
+            const { block, displayIndex } = data;
+            if (displayIndex === currentDisplay.index) {
+                return;
             }
-            timerRunning = false;
-            timerCompleted = false;
-            timerPauseBtn.textContent = '⏸ Pause';
-            timerInputMode.style.display = 'block';
-            timerRunningMode.style.display = 'none';
-            timerMinutesInput.value = '';
-            timerSecondsInput.value = '';
-            totalSeconds = 0;
-        }
+            currentDisplay.index = displayIndex;
 
-        function playTimerSound() {
-            // Create a simple beep sound using Web Audio API
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = 800;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-        }
+            const contentEl = document.getElementById('presentation-content-display');
 
-        timerBtn.addEventListener('click', () => {
-            timerOverlay.classList.add('show');
-            timerMinutesInput.focus();
-        });
-
-        timerCloseBtn.addEventListener('click', () => {
-            stopTimer();
-            timerOverlay.classList.remove('show');
-        });
-
-        timerStartBtn.addEventListener('click', startTimer);
-        timerPauseBtn.addEventListener('click', pauseTimer);
-        timerStopBtn.addEventListener('click', () => {
-            stopTimer();
-            timerOverlay.classList.remove('show');
-        });
-
-        // Allow Enter key to start timer
-        timerSecondsInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                startTimer();
+            if (!block || block.type !== 'SLIDE') {
+                contentEl.innerHTML = `<div style="color:#9ca3af;font-size:2rem;">Trainer narration only</div>`;
+                return;
             }
-        });
 
-        prevBtn.addEventListener('click', () => {
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({ type: 'NAVIGATE_STEP', direction: 'prev' }, '*');
-            }
-        });
-
-        nextBtn.addEventListener('click', () => {
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({ type: 'NAVIGATE_STEP', direction: 'next' }, '*');
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') {
-                prevBtn.click();
-            } else if (e.key === 'ArrowRight') {
-                nextBtn.click();
-            }
-        });
-
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'UPDATE_STEP') {
-                const data = event.data.data;
-                updatePresentationView(data, currentDisplay);
-                prevBtn.disabled = data.stepIndex === 0;
-                nextBtn.disabled = data.stepIndex === data.totalSteps - 1;
-                stepCountEl.textContent = `${data.stepIndex + 1} / ${data.totalSteps}`;
-                const progress = ((data.stepIndex + 1) / data.totalSteps) * 100;
-                progressBar.style.width = `${progress}%`;
-            }
-        });
-    }
-
-    function updatePresentationView(data, currentDisplay) {
-        const { block, displayIndex } = data;
-        if (displayIndex === currentDisplay.index) {
-            return;
-        }
-        currentDisplay.index = displayIndex;
-
-        const contentEl = document.getElementById('presentation-content-display');
-        
-        if (!block || block.type !== 'SLIDE') {
-            contentEl.innerHTML = `<div style="color:#9ca3af;font-size:2rem;">Trainer narration only</div>`;
-            return;
-        }
-
-        const titleHtml = renderMarkdownInline(block.content.title || '');
-        const contentHtml = renderMarkdownInline(block.content.content || '');
-        contentEl.innerHTML = `
+            const titleHtml = renderMarkdownInline(block.content.title || '');
+            const contentHtml = renderMarkdownInline(block.content.content || '');
+            contentEl.innerHTML = `
             <div class="presentation-title">${titleHtml}</div>
             <div class="presentation-content">${contentHtml}</div>
         `;
-    }
+        }
 
-    initializeApp();
-</script>
+        initializeApp();
+    </script>
 </body>
+
 </html>
