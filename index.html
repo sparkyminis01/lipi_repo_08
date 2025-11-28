@@ -923,8 +923,8 @@
                 return block.content.title || 'Slide';
             } else if (block.type === 'SCRIPT') {
                 return 'Trainer Narration';
-            } else if (block.type === 'ACTIVITY') {
-                return `Activity: ${block.content.activityType || 'Unnamed'}`;
+            } else if (block.type === 'ACTIVITY' || block.type === 'PAUSE & PRACTICE') {
+                return `${block.type}: ${block.content.activityType || 'Unnamed'}`;
             }
             return block.type;
         }
@@ -977,7 +977,7 @@
             for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
 
-                if (line === '[SLIDE]' || line === '[SCRIPT]' || line === '[ACTIVITY]') {
+                if (line === '[SLIDE]' || line === '[SCRIPT]' || line === '[ACTIVITY]' || line === '[PAUSE & PRACTICE]') {
                     if (currentBlock) {
                         blocks.push(parseBlock(currentBlock, currentBlockLines));
                     }
